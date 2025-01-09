@@ -86,7 +86,7 @@ type ProjectKey = keyof typeof projectData;
 
 export default function AnalyticsPage() {
   const [selectedProject, setSelectedProject] = useState<ProjectKey>('project1')
-  const currentData = projectData[selectedProject] as typeof projectData[ProjectKey]
+  const currentData = projectData[selectedProject]
 
   return (
     <>
