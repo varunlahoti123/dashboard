@@ -2,6 +2,7 @@ import "@/styles/globals.css"
 import { GeistSans } from "geist/font/sans"
 import { Button } from "../components/ui/button"
 import { Home, FileText, Users, BarChart3, Settings } from 'lucide-react'
+import Link from 'next/link'
 
 export default function RootLayout({
   children,
@@ -20,16 +21,16 @@ export default function RootLayout({
             </div>
             <nav>
               <Button variant="ghost" className="w-full justify-start mb-2" asChild>
-                <a href="/">
+                <Link href="/">
                   <Home className="mr-2 h-4 w-4" />
                   Dashboard
-                </a>
+                </Link>
               </Button>
               <Button variant="ghost" className="w-full justify-start mb-2" asChild>
-                <a href="/requests">
+                <Link href="/requests">
                   <FileText className="mr-2 h-4 w-4" />
                   Requests
-                </a>
+                </Link>
               </Button>
               <Button variant="ghost" className="w-full justify-start mb-2" asChild>
                 <a>
@@ -38,10 +39,10 @@ export default function RootLayout({
                 </a>
               </Button>
               <Button variant="ghost" className="w-full justify-start mb-2" asChild>
-                <a href="/analytics">
+                <Link href="/analytics">
                   <BarChart3 className="mr-2 h-4 w-4" />
                   Analytics
-                </a>
+                </Link>
               </Button>
               <Button variant="ghost" className="w-full justify-start" asChild>
                 <a>
