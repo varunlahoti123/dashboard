@@ -207,7 +207,7 @@ export default function AnalyticsPage() {
                 <Tooltip 
                   cursor={{ strokeDasharray: '3 3' }}
                   content={({ active, payload, label }) => {
-                    if (active && payload && payload.length) {
+                    if (active && payload && payload.length > 0 && payload[0]?.value !== undefined) {
                       return (
                         <div className="bg-white border p-2 shadow-lg rounded-lg">
                           <p className="font-medium">Day {label}</p>
