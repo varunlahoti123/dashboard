@@ -1,43 +1,46 @@
 import { GeistSans } from "geist/font/sans"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  ClerkProvider,
+  SignedIn,
+  SignedOut,
+  UserButton,
+  SignIn
+} from '@clerk/nextjs'
 
 export default function LoginPage() {
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-gray-50">
-      <div className="mb-8 text-center">
-        <h1 className="text-4xl font-bold tracking-tight text-gray-900">Hermes Health</h1>
-      
-      </div>
+    <ClerkProvider>
+      <div className={`flex min-h-screen flex-col items-center justify-center bg-gray-50 ${GeistSans.className}`}>
+        <Card className="w-[450px]">
+          <CardHeader>
+            <CardTitle className="text-2xl font-bold text-left">Hermes Health</CardTitle>
+            <CardDescription className="mt-2 text-gray-600">
+              Welcome to Hermes Health. Please sign in to manage your medical requests records securely.
+            </CardDescription>
+          </CardHeader>
 
-      <Card className="w-[350px]">
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold">Welcome back</CardTitle>
-          <CardDescription>
-            Sign in to your account to continue
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="grid gap-4">
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t" />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-gray-50 px-2 text-muted-foreground">
-                Sign in with
-              </span>
-            </div>
-          </div>
-          <div className="grid gap-2">
-            <Button variant="outline" className="w-full">
-              Continue with Google
-            </Button>
-            <Button variant="outline" className="w-full">
-              Continue with GitHub
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+          <CardContent>
+            <SignedOut>
+              <SignIn
+                appearance={{
+                  elements: {
+                    rootBox: "w-full",
+                    card: "shadow-none",
+                    header: "hidden",
+                  }
+                }}
+              />
+            </SignedOut>
+            <SignedIn>
+              <div className="flex justify-center p-6">
+                <UserButton afterSignOutUrl="/" />
+              </div>
+            </SignedIn>
+          </CardContent>
+        </Card>
+      </div>
+    </ClerkProvider>
   )
 }
