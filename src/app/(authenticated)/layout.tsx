@@ -17,11 +17,13 @@ export default function RootLayout({
           <aside className="w-64 bg-white dark:bg-gray-800 p-4 shadow-md">
             <div className="flex items-center mb-6">
               <div className="w-8 h-8 mr-2"></div>
-              <h1 className="text-xl font-bold">Hermes Health</h1>
+              <Link href="/">
+                <h1 className="text-xl font-bold">Hermes Health</h1>
+              </Link>
             </div>
             <nav>
               <Button variant="ghost" className="w-full justify-start mb-2" asChild>
-                <Link href="/">
+                <Link href="/dashboard">
                   <Home className="mr-2 h-4 w-4" />
                   Dashboard
                 </Link>
