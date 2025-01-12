@@ -4,6 +4,16 @@ import { NextResponse } from 'next/server'
 const isProtectedRoute = createRouteMatcher(['/(.+)'])
 
 export default clerkMiddleware(async (auth, req) => {
+  // Check if user is on homepage
+  if (req.nextUrl.pathname === '/') {
+    const isAuthenticated = await auth.protect().catch(() => false)
+    
+    if (isAuthenticated) {
+      return NextResponse.redirect(new URL('/dashboard', req.url))
+    }
+  }
+  
+  // Existing protected routes logic
   if (isProtectedRoute(req)) {
     const isAuthenticated = await auth.protect().catch(() => false)
     

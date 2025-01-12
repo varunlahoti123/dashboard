@@ -17,7 +17,7 @@ export default function LoginPage() {
           <CardHeader>
             <CardTitle className="text-2xl font-bold text-left">Hermes Health</CardTitle>
             <CardDescription className="mt-2 text-gray-600">
-              Welcome to Hermes Health. Please sign in to manage your medical requests records securely.
+              Welcome to Hermes Health. Please sign in to manage your medical record requests securely.
             </CardDescription>
           </CardHeader>
 

@@ -19,8 +19,11 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Plus, FolderPlus, UserPlus } from 'lucide-react'
+import { db } from "@/server/db"
 
-export default function RequestsPage() {
+export default async function RequestsPage() {
+  const posts = await db.query.posts.findMany()
+
   return (
     <>
       <div className="flex justify-between items-center mb-6">
@@ -80,12 +83,29 @@ export default function RequestsPage() {
                   <Input id="patient-name" placeholder="Enter patient name" />
                 </div>
                 <div className="grid gap-2">
-                  <Label htmlFor="facility">Facility Name(s)</Label>
+                  <Label htmlFor="facility">Facility Name</Label>
                   <Input id="facility" placeholder="Enter facility names" />
                 </div>
                 <div className="grid gap-2">
-                  <Label htmlFor="visit-dates">Visit Dates</Label>
-                  <Input id="visit-dates" placeholder="Enter visit dates" type="date" />
+                  <Label htmlFor="visit-dates">Visit Date Range</Label>
+                  <div className="flex gap-2 items-center">
+                    <div className="grid gap-1 flex-1">
+                      <Label htmlFor="start-date" className="text-sm">From</Label>
+                      <Input 
+                        id="start-date" 
+                        placeholder="Start date" 
+                        type="date" 
+                      />
+                    </div>
+                    <div className="grid gap-1 flex-1">
+                      <Label htmlFor="end-date" className="text-sm">To</Label>
+                      <Input 
+                        id="end-date" 
+                        placeholder="End date" 
+                        type="date" 
+                      />
+                    </div>
+                  </div>
                 </div>
                 <div className="grid gap-2">
                   <Label htmlFor="project">Project</Label>
@@ -190,6 +210,25 @@ export default function RequestsPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Database Contents Debug Section
+      <div className="mt-8 p-4 bg-gray-50 rounded-lg">
+        <h3 className="text-lg font-medium mb-4">Database Contents</h3>
+        <div className="space-y-2">
+          {posts.map((post, index) => (
+            <div key={post.id} className="p-3 bg-white rounded border">
+              <pre className="text-sm overflow-x-auto">
+                {JSON.stringify(post, null, 2)}
+              </pre>
+            </div>
+          ))}
+          {posts.length === 0 && (
+            <p className="text-gray-500 italic">No database entries found</p>
+          )}
+        </div>
+      </div> */}
+
+
     </>
   )
 }
