@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
@@ -211,7 +213,7 @@ export default async function RequestsPage() {
         </Card>
       </div>
 
-      {/* Database Contents Debug Section
+      {/* Database Contents Debug Section */}
       <div className="mt-8 p-4 bg-gray-50 rounded-lg">
         <h3 className="text-lg font-medium mb-4">Database Contents</h3>
         <div className="space-y-2">
@@ -226,7 +228,7 @@ export default async function RequestsPage() {
             <p className="text-gray-500 italic">No database entries found</p>
           )}
         </div>
-      </div> */}
+      </div>
 
 
     </>
