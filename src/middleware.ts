@@ -4,6 +4,11 @@ import { NextResponse } from 'next/server'
 const isProtectedRoute = createRouteMatcher(['/(.+)'])
 
 export default clerkMiddleware(async (auth, req) => {
+  // Skip auth for webhooks
+  if (req.nextUrl.pathname.startsWith('/api/webhooks')) {
+    return NextResponse.next()
+  }
+
   // Check if user is on homepage
   if (req.nextUrl.pathname === '/') {
     const isAuthenticated = await auth.protect().catch(() => false)
@@ -25,9 +30,7 @@ export default clerkMiddleware(async (auth, req) => {
 
 export const config = {
   matcher: [
-    // Skip Next.js internals and all static files, unless found in search params
-    '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
-    // Always run for API routes
-    '/(api|trpc)(.*)',
+    '/((?!_next|api/webhooks|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
+    '/(api(?!/webhooks))(.*)', // Match API routes except webhooks
   ],
 }

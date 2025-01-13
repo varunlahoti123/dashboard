@@ -34,3 +34,24 @@ export const posts = createTable(
     nameIndex: index("name_idx").on(example.name),
   })
 );
+
+export const users = createTable(
+  "user",
+  {
+    clerkId: varchar("clerk_id", { length: 256 }).primaryKey(),
+    email: varchar("email", { length: 256 }).notNull(),
+    role: varchar("role", { length: 32 }).default("user").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).$onUpdate(
+      () => new Date()
+    ),
+  },
+  (table) => ({
+    clerkIdIndex: index("clerk_id_idx").on(table.clerkId),
+    emailIndex: index("email_idx").on(table.email),
+  })
+);
+
+
