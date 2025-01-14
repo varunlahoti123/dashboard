@@ -165,13 +165,9 @@ async function RequestsContent() {
                         </td>
                         <td className="p-2">
                           <span className={`px-2 py-1 rounded-full text-xs ${
-                            request.status! === 'completed' 
-                              ? 'bg-green-100 text-green-800'
-                              : request.status! === 'in_progress'
-                              ? 'bg-yellow-100 text-yellow-800'
-                              : 'bg-gray-100 text-gray-800'
+                            getStatusColor(request.status)
                           }`}>
-                            {request.status!.replace('_', ' ').charAt(0).toUpperCase() + request.status!.slice(1)}
+                            {formatStatus(request.status)}
                           </span>
                         </td>
                       </tr>
@@ -197,5 +193,24 @@ async function RequestsContent() {
       </div>
     </>
   );
+}
+
+function getStatusColor(status: string | null) {
+  switch (status) {
+    case 'completed':
+      return 'bg-green-100 text-green-800';
+    case 'in_progress':
+      return 'bg-yellow-100 text-yellow-800';
+    default:
+      return 'bg-gray-100 text-gray-800';
+  }
+}
+
+function formatStatus(status: string | null) {
+  if (!status) return 'Unknown';
+  return status.replace('_', ' ')
+    .split(' ')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
 }
 
