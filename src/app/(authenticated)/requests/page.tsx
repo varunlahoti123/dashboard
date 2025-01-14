@@ -165,13 +165,13 @@ async function RequestsContent() {
                         </td>
                         <td className="p-2">
                           <span className={`px-2 py-1 rounded-full text-xs ${
-                            request.status === 'completed' 
+                            request.status! === 'completed' 
                               ? 'bg-green-100 text-green-800'
-                              : request.status === 'in_progress'
+                              : request.status! === 'in_progress'
                               ? 'bg-yellow-100 text-yellow-800'
                               : 'bg-gray-100 text-gray-800'
                           }`}>
-                            {request.status.replace('_', ' ').charAt(0).toUpperCase() + request.status.slice(1)}
+                            {request.status!.replace('_', ' ').charAt(0).toUpperCase() + request.status!.slice(1)}
                           </span>
                         </td>
                       </tr>
