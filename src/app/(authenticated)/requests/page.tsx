@@ -59,6 +59,17 @@ export default async function RequestsPage() {
                     className="min-h-[100px]"
                   />
                 </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="letter-of-representation">Letter of Representation</Label>
+                  <div className="flex gap-2 items-center">
+                    <Input 
+                      id="letter-of-representation" 
+                      type="file" 
+                      accept=".pdf,.doc,.docx"
+                      className="h-auto py-2 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-primary-foreground hover:file:bg-primary/90"
+                    />
+                  </div>
+                </div>
               </div>
               <Button className="w-full">Create Project</Button>
             </DialogContent>
