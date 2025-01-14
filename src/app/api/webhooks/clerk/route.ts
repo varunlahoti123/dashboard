@@ -1,3 +1,24 @@
+/**
+ * Webhook handler for Clerk authentication events.
+ * 
+ * This endpoint receives webhook events from Clerk when user accounts are created or updated.
+ * It verifies the webhook signature using SVIX and syncs user data to our database.
+ * 
+ * The handler:
+ * 1. Validates the required CLERK_WEBHOOK_SECRET environment variable
+ * 2. Extracts and validates the SVIX headers used for webhook verification
+ * 3. Verifies the webhook payload signature using SVIX
+ * 4. For user.created and user.updated events:
+ *    - Extracts the user's email
+ *    - Inserts/updates the user record in our database
+ *    - Sets default role as 'user'
+ * 
+ * Security:
+ * - Uses SVIX for webhook signature verification
+ * - Requires valid CLERK_WEBHOOK_SECRET
+ * - Validates all required SVIX headers
+ */
+
 import { Webhook } from 'svix'
 import { headers } from 'next/headers'
 import type { WebhookEvent } from '@clerk/nextjs/server'

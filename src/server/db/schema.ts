@@ -16,6 +16,7 @@ import {
   date,
   foreignKey,
 } from "drizzle-orm/pg-core";
+import { type InferSelectModel } from "drizzle-orm";
 
 /**
  * This is an example of how to use the multi-project schema feature of Drizzle ORM. Use the same
@@ -184,5 +185,9 @@ export const hipaaAuthorizations = createTable(
     })
   })
 );
+
+// Export the inferred types
+export type Project = InferSelectModel<typeof projects>;
+export type RecordRequest = InferSelectModel<typeof recordRequests>;
 
 

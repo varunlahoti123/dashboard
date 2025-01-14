@@ -1,30 +1,25 @@
-export const dynamic = 'force-dynamic'
-
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import { Plus, FolderPlus, UserPlus } from 'lucide-react'
-import { db } from "@/server/db"
+import { getProjectsWithRequests } from "@/app/_actions/projects";
+import { Suspense } from "react";
+import LoadingRequests from "./loading";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { FolderPlus, UserPlus } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export default async function RequestsPage() {
-  const posts = await db.query.posts.findMany()
+  return (
+    <Suspense fallback={<LoadingRequests />}>
+      <RequestsContent />
+    </Suspense>
+  );
+}
+
+async function RequestsContent() {
+  const projectsWithRequests = await getProjectsWithRequests();
 
   return (
     <>
@@ -141,108 +136,66 @@ export default async function RequestsPage() {
 
       {/* Projects List */}
       <div className="space-y-6">
-        {/* Example Project Card */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-xl">Project: Medical Records Review 2024</CardTitle>
-            <p className="text-sm text-muted-foreground">
-              Comprehensive review of patient records for Q1 2024
-            </p>
-          </CardHeader>
-          <CardContent>
-            <div className="rounded-md border">
-              <table className="w-full">
-                <thead className="bg-muted">
-                  <tr>
-                    <th className="p-2 text-left">Patient Name</th>
-                    <th className="p-2 text-left">Facility</th>
-                    <th className="p-2 text-left">Visit Dates</th>
-                    <th className="p-2 text-left">Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr className="border-t">
-                    <td className="p-2">John Doe</td>
-                    <td className="p-2">General Hospital</td>
-                    <td className="p-2">2024-01-15</td>
-                    <td className="p-2">
-                      <span className="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs">
-                        In Progress
-                      </span>
-                    </td>
-                  </tr>
-                  <tr className="border-t">
-                    <td className="p-2">Jane Smith</td>
-                    <td className="p-2">City Medical Center</td>
-                    <td className="p-2">2024-01-20</td>
-                    <td className="p-2">
-                      <span className="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">
-                        Completed
-                      </span>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Another Project Card */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-xl">Project: Insurance Review</CardTitle>
-            <p className="text-sm text-muted-foreground">
-              Insurance claim documentation review
-            </p>
-          </CardHeader>
-          <CardContent>
-            <div className="rounded-md border">
-              <table className="w-full">
-                <thead className="bg-muted">
-                  <tr>
-                    <th className="p-2 text-left">Patient Name</th>
-                    <th className="p-2 text-left">Facility</th>
-                    <th className="p-2 text-left">Visit Dates</th>
-                    <th className="p-2 text-left">Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr className="border-t">
-                    <td className="p-2">Robert Johnson</td>
-                    <td className="p-2">Memorial Hospital</td>
-                    <td className="p-2">2024-02-01</td>
-                    <td className="p-2">
-                      <span className="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs">
-                        In Progress
-                      </span>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </CardContent>
-        </Card>
+        {projectsWithRequests.map((project) => (
+          <Card key={project.id}>
+            <CardHeader>
+              <CardTitle className="text-xl">Project: {project.name}</CardTitle>
+              <p className="text-sm text-muted-foreground">
+                {project.description}
+              </p>
+            </CardHeader>
+            <CardContent>
+              <div className="rounded-md border">
+                <table className="w-full">
+                  <thead className="bg-muted">
+                    <tr>
+                      <th className="p-2 text-left">Patient Name</th>
+                      <th className="p-2 text-left">Facility</th>
+                      <th className="p-2 text-left">Visit Dates</th>
+                      <th className="p-2 text-left">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {project.requests.map((request) => (
+                      <tr key={request.id} className="border-t">
+                        <td className="p-2">{request.patientName}</td>
+                        <td className="p-2">{request.providerName}</td>
+                        <td className="p-2">
+                          {new Date(request.visitDateStart).toLocaleDateString()} - {new Date(request.visitDateEnd).toLocaleDateString()}
+                        </td>
+                        <td className="p-2">
+                          <span className={`px-2 py-1 rounded-full text-xs ${
+                            request.status === 'completed' 
+                              ? 'bg-green-100 text-green-800'
+                              : request.status === 'in_progress'
+                              ? 'bg-yellow-100 text-yellow-800'
+                              : 'bg-gray-100 text-gray-800'
+                          }`}>
+                            {request.status.replace('_', ' ').charAt(0).toUpperCase() + request.status.slice(1)}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                    {project.requests.length === 0 && (
+                      <tr>
+                        <td colSpan={4} className="p-4 text-center text-gray-500">
+                          No requests found for this project
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+        {projectsWithRequests.length === 0 && (
+          <div className="text-center p-8 bg-gray-50 rounded-lg">
+            <p className="text-gray-500">No projects found</p>
+          </div>
+        )}
       </div>
-
-      {/* Database Contents Debug Section */}
-      <div className="mt-8 p-4 bg-gray-50 rounded-lg">
-        <h3 className="text-lg font-medium mb-4">Database Contents</h3>
-        <div className="space-y-2">
-          {posts.map((post, index) => (
-            <div key={post.id} className="p-3 bg-white rounded border">
-              <pre className="text-sm overflow-x-auto">
-                {JSON.stringify(post, null, 2)}
-              </pre>
-            </div>
-          ))}
-          {posts.length === 0 && (
-            <p className="text-gray-500 italic">No database entries found</p>
-          )}
-        </div>
-      </div>
-
-
     </>
-  )
+  );
 }
 
