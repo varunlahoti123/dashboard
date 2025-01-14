@@ -10,6 +10,8 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { FolderPlus, UserPlus } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
+export const dynamic = 'force-dynamic'
+
 export default async function RequestsPage() {
   return (
     <Suspense fallback={<LoadingRequests />}>
