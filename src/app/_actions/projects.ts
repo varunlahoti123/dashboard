@@ -76,7 +76,8 @@ export async function getProjectsWithRequests(): Promise<ProjectWithRequests[]> 
       );
     }
 
-    return response.json() as Promise<ProjectWithRequests[]>;
+    const data = await response.json();
+    return data as ProjectWithRequests[];
   } catch (error) {
     console.error('Fetch Error:', error);
     throw error;
