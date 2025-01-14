@@ -20,7 +20,10 @@
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,mdx}\" --cache",
     "sync-users": "tsx src/server/scripts/sync-clerk-users.ts",
     "seed": "NODE_OPTIONS=\"--import tsx\" tsx src/server/db/seed.ts",
-    "test": "jest"
+    "test": "jest",
+    "predev": "pnpm typecheck",
+    "prebuild": "pnpm lint && pnpm typecheck",
+    "build:analyze": "ANALYZE=true next build"
   },
   "dependencies": {
     "@clerk/clerk-sdk-node": "^5.1.6",
@@ -65,7 +68,6 @@
     "eslint": "^8.57.0",
     "eslint-config-next": "^15.0.1",
     "eslint-plugin-drizzle": "^0.2.3",
-    "husky": "^9.1.7",
     "jest": "^29.7.0",
     "postcss": "^8.4.39",
     "prettier": "^3.3.2",

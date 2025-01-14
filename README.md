@@ -34,6 +34,36 @@ This pattern ensures:
 - Centralized authentication
 - Proper error handling
 
+## Development Checklist
+
+### Before Committing
+- [ ] Run `pnpm typecheck` to check for type errors
+- [ ] Run `pnpm lint` to check for code style issues
+- [ ] Test dynamic routes with `dynamic = 'force-dynamic'` config
+- [ ] Check for null/undefined handling in components
+
+### Before Deployment
+- [ ] Run `pnpm build` locally to catch build-time errors
+- [ ] Test authentication flows
+- [ ] Verify environment variables are set in production
+- [ ] Check for client/server component boundaries
+- [ ] Verify API routes and server actions work locally
+
+### Common Issues to Watch
+1. Static/Dynamic Route Conflicts
+   - Add `dynamic = 'force-dynamic'` for authenticated routes
+   - Check for usage of headers, cookies, dynamic data
+
+2. Type Safety
+   - Handle null/undefined cases
+   - Use proper type guards
+   - Verify API response types
+
+3. Authentication
+   - Test auth middleware
+   - Verify protected routes
+   - Check token handling
+
 ## TO DO
 - [ ] Deploy to Vercel
 - [ ] Add authentication

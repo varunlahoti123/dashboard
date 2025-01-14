@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { FolderPlus, UserPlus } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { CreateProjectForm } from "./components/create-project-form";
 
 export const dynamic = 'force-dynamic'
 
@@ -28,49 +29,7 @@ async function RequestsContent() {
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-semibold text-gray-800">Medical Record Requests</h2>
         <div className="flex items-center gap-2">
-          {/* Create Project Modal */}
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button>
-                <FolderPlus className="h-4 w-4 mr-2" />
-                New Project
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Create New Project</DialogTitle>
-                <DialogDescription>
-                  Create a new project to organize your medical record requests.
-                </DialogDescription>
-              </DialogHeader>
-              <div className="grid gap-4 py-4">
-                <div className="grid gap-2">
-                  <Label htmlFor="project-name">Project Name</Label>
-                  <Input id="project-name" placeholder="Enter project name" />
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="description">Description</Label>
-                  <Textarea
-                    id="description"
-                    placeholder="Enter project description"
-                    className="min-h-[100px]"
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="letter-of-representation">Letter of Representation</Label>
-                  <div className="flex gap-2 items-center">
-                    <Input 
-                      id="letter-of-representation" 
-                      type="file" 
-                      accept=".pdf,.doc,.docx"
-                      className="h-auto py-2 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-primary-foreground hover:file:bg-primary/90"
-                    />
-                  </div>
-                </div>
-              </div>
-              <Button className="w-full">Create Project</Button>
-            </DialogContent>
-          </Dialog>
+          <CreateProjectForm />
 
           {/* Add Patient Modal */}
           <Dialog>

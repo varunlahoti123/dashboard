@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ProjectFormValues, projectFormSchema } from "@/types/projects";
+import { createNewProject } from "@/app/_actions/projects";
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,21 +12,43 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { FolderPlus } from "lucide-react";
+import { useRouter } from "next/navigation";
 
-export function CreateProjectForm() {
+export function CreateProjectForm({ onSuccess }: { onSuccess?: () => void }) {
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const { toast } = useToast();
   
-  const { register, handleSubmit } = useForm<ProjectFormValues>({
+  const { register, handleSubmit, reset } = useForm<ProjectFormValues>({
     resolver: zodResolver(projectFormSchema),
   });
 
   const onSubmit = async (data: ProjectFormValues) => {
-    toast({
-      title: "Not Implemented",
-      description: "Project creation coming soon",
-    });
-    setOpen(false);
+    const formData = new FormData();
+    formData.append("name", data.name);
+    if (data.description) formData.append("description", data.description);
+    if (typeof data.letterOfRepresentation === 'string') {
+      formData.append("letterOfRepresentation", data.letterOfRepresentation);
+    }
+
+    const result = await createNewProject(formData);
+    
+    if (result.success) {
+      toast({
+        title: "Success",
+        description: "Project created successfully",
+      });
+      reset();
+      setOpen(false);
+      router.refresh();
+      onSuccess?.();
+    } else {
+      toast({
+        title: "Error",
+        description: result.error,
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -51,6 +74,14 @@ export function CreateProjectForm() {
           <div className="grid gap-2">
             <Label htmlFor="description">Description</Label>
             <Textarea id="description" {...register("description")} />
+          </div>
+          <div className="grid gap-2">
+            <Label htmlFor="letterOfRepresentation">Letter of Representation URL</Label>
+            <Input 
+              id="letterOfRepresentation" 
+              placeholder="https://example.com/letter.pdf"
+              {...register("letterOfRepresentation")} 
+            />
           </div>
           <Button type="submit" className="w-full">Create Project</Button>
         </form>

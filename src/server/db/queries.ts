@@ -1,6 +1,7 @@
 import { db } from "./index";
 import { projects, recordRequests, type Project, type RecordRequest } from "./schema";
 import { eq, inArray } from "drizzle-orm";
+import { ProjectFormValues } from "@/types/projects";
 
 export async function getProjectsByUserId(userId: string) {
   return await db
@@ -36,4 +37,20 @@ export async function getUserProjectsWithRequests(userId: string) {
   }));
 
   return requestsByProject;
+}
+
+export async function createProject(userId: string, data: ProjectFormValues): Promise<Project> {
+  const [newProject] = await db
+    .insert(projects)
+    .values({
+      userId,
+      name: data.name,
+      description: data.description ?? null,
+      letterRepresentationDocumentLocation: typeof data.letterOfRepresentation === 'string' 
+        ? data.letterOfRepresentation 
+        : null,
+    })
+    .returning();
+
+  return newProject as Project;
 } 
