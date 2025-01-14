@@ -1,7 +1,7 @@
 import { eq, inArray } from "drizzle-orm";
 import { db } from "../index";
 import { getUserProjectsWithRequests, getProjectsByUserId, getRecordRequestsByProjectIds } from "../queries";
-import { projects, recordRequests, users } from "../schema";
+import { projects, recordRequests, users, RecordRequest } from "../schema";
 import { v4 as uuidv4 } from 'uuid';
 
 describe('Database Queries', () => {
@@ -43,32 +43,42 @@ describe('Database Queries', () => {
       {
         projectId: project.id,
         patientName: "Test Patient 1",
-        patientDob: new Date("1990-01-01"),
+        patientDob: new Date("1990-01-01").toISOString(),
         providerName: "Test Provider",
         providerDetails: {
           address: "123 Test St",
           phone: "123-456-7890",
           fax: "098-765-4321"
         },
-        visitDateStart: new Date("2024-01-01"),
-        visitDateEnd: new Date("2024-01-31"),
+        visitDateStart: new Date("2024-01-01").toISOString(),
+        visitDateEnd: new Date("2024-01-31").toISOString(),
+        status: "pending" as const,
+        priority: "normal" as const,
+        requestType: "medical_records" as const,
+        vendorRouting: "MRO" as const,
+        medicalRecordLocation: null
       },
       {
         projectId: project.id,
         patientName: "Test Patient 2",
-        patientDob: new Date("1995-01-01"),
+        patientDob: new Date("1995-01-01").toISOString(),
         providerName: "Test Provider 2",
         providerDetails: {
           address: "456 Test Ave",
           phone: "123-456-7890",
           fax: "098-765-4321"
         },
-        visitDateStart: new Date("2024-02-01"),
-        visitDateEnd: new Date("2024-02-28"),
+        visitDateStart: new Date("2024-02-01").toISOString(),
+        visitDateEnd: new Date("2024-02-28").toISOString(),
+        status: "pending" as const,
+        priority: "normal" as const,
+        requestType: "medical_records" as const,
+        vendorRouting: "MRO" as const,
+        medicalRecordLocation: null
       }
     ]));
 
-    await db.insert(recordRequests).values(requestData as any);
+    await db.insert(recordRequests).values(requestData);
   });
 
   // Clean up test data

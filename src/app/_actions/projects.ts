@@ -31,7 +31,7 @@ export async function getProjectsWithRequests(): Promise<ProjectWithRequests[]> 
   try {
     const { getToken } = await auth();
     const token = await getToken();
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000';
     const fullUrl = new URL('/api/projects', baseUrl).toString();
     
     // console.log('Request Details:', {
@@ -61,11 +61,11 @@ export async function getProjectsWithRequests(): Promise<ProjectWithRequests[]> 
 
     if (!response.ok) {
       // Try to get the error message from the response body
-      let errorDetail;
+      let errorDetail: string;
       try {
         const errorJson = await response.json();
         errorDetail = JSON.stringify(errorJson);
-      } catch (e) {
+      } catch (_) {
         errorDetail = await response.text();
       }
 
@@ -76,13 +76,9 @@ export async function getProjectsWithRequests(): Promise<ProjectWithRequests[]> 
       );
     }
 
-    return response.json();
+    return response.json() as Promise<ProjectWithRequests[]>;
   } catch (error) {
-    console.error('Fetch Error:', {
-      error,
-      message: error instanceof Error ? error.message : String(error),
-      stack: error instanceof Error ? error.stack : undefined
-    });
+    console.error('Fetch Error:', error);
     throw error;
   }
 } 
