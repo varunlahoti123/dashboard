@@ -1,85 +1,26 @@
-/**
- * Projects API client module
- * 
- * This module provides the client-side API interface for interacting with projects and record requests.
- * It handles authentication via Clerk and makes HTTP requests to the projects API endpoints.
- * 
- * The module exports:
- * - ProjectWithRequests type: Represents a project and its associated record requests
- * - getProjectsWithRequests(): Fetches authenticated user's projects with their requests
- */
+"use server"
+// Server actions for projects
 
 import { auth } from "@clerk/nextjs/server";
+import { getUserProjectsWithRequests } from "@/server/db/queries";
+import { db } from "@/server/db";
+import { projects } from "@/server/db/schema";
+import { ProjectWithRequests, projectFormSchema } from "@/types/projects";
 
-export type ProjectWithRequests = {
-  id: string;
-  name: string;
-  description: string | null;
-  requests: Array<{
-    id: string;
-    patientName: string;
-    providerName: string;
-    visitDateStart: Date;
-    visitDateEnd: Date;
-    status: "pending" | "in_progress" | "completed" | "failed" | "cancelled";
-  }>;
-};
-
-// This function makes an authenticated HTTP request to fetch projects and their requests
-// Returns a Promise that resolves to an array of ProjectWithRequests
+// Authentication is handled by Clerk middleware and auth() function
 export async function getProjectsWithRequests(): Promise<ProjectWithRequests[]> {
   try {
-    const { getToken } = await auth();
-    const token = await getToken();
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000';
-    const fullUrl = new URL('/api/projects', baseUrl).toString();
+    const { userId } = await auth();
     
-    // console.log('Request Details:', {
-    //   isServer: typeof window === 'undefined',
-    //   baseUrl,
-    //   relativePath: '/api/projects',
-    //   fullUrl,
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //     'Authorization': `Bearer ${token}`,
-    //   }
-    // });
-
-    const response = await fetch(fullUrl, {
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-      },
-      credentials: 'same-origin'
-    });
-
-    console.log('Response Details:', {
-      status: response.status,
-      statusText: response.statusText,
-      headers: Object.fromEntries(response.headers.entries()),
-    });
-
-    if (!response.ok) {
-      // Try to get the error message from the response body
-      let errorDetail: string;
-      try {
-        const errorJson = await response.json() as Record<string, unknown>;
-        errorDetail = JSON.stringify(errorJson);
-      } catch (_) {
-        errorDetail = await response.text();
-      }
-
-      throw new Error(
-        `Failed to fetch projects: ${response.status}\n` +
-        `Status Text: ${response.statusText}\n` +
-        `Error Details: ${errorDetail}`
-      );
+    if (!userId) {
+      throw new Error("Unauthorized");
     }
 
-    const data = (await response.json()) as ProjectWithRequests[];
-    return data;
+    // Direct database query through server action
+    return getUserProjectsWithRequests(userId);
   } catch (error) {
-    console.error('Fetch Error:', error);
-    throw error;
+    console.error('Project fetch error:', error);
+    throw new Error(error instanceof Error ? error.message : "Failed to fetch projects");
   }
-} 
+}
+
