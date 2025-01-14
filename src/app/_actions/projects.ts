@@ -63,7 +63,7 @@ export async function getProjectsWithRequests(): Promise<ProjectWithRequests[]> 
       // Try to get the error message from the response body
       let errorDetail: string;
       try {
-        const errorJson = await response.json();
+        const errorJson = await response.json() as Record<string, unknown>;
         errorDetail = JSON.stringify(errorJson);
       } catch (_) {
         errorDetail = await response.text();
@@ -76,8 +76,8 @@ export async function getProjectsWithRequests(): Promise<ProjectWithRequests[]> 
       );
     }
 
-    const data = await response.json();
-    return data as ProjectWithRequests[];
+    const data = (await response.json()) as ProjectWithRequests[];
+    return data;
   } catch (error) {
     console.error('Fetch Error:', error);
     throw error;
