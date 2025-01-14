@@ -54,58 +54,58 @@ async function seed() {
   );
 
   // Create record requests for each project
-  for (const projectId of projectIds) {
-    await Promise.all([
-      // Request 1: Urgent pending request
-      db.insert(recordRequests).values({
-        projectId: projectId,
-        patientName: "John Smith",
-        patientDob: new Date(1965, 3, 15),
-        providerName: PROVIDERS[0]!.name,
-        providerDetails: PROVIDERS[0]!.details,
-        visitDateStart: new Date(2023, 1, 15),
-        visitDateEnd: new Date(2023, 8, 30),
-        status: "pending",
-        requestType: "medical_records",
-        priority: "urgent",
-        vendorRouting: "MRO",
-        createdAt: new Date(),
-        notes: "Follow up needed with provider",
-      }),
+//   for (const projectId of projectIds) {
+//     await Promise.all([
+//       // Request 1: Urgent pending request
+//       db.insert(recordRequests).values({
+//         // projectId: projectId,
+//         patientName: "John Smith",
+//         patientDob: new Date(1965, 3, 15),
+//         providerName: PROVIDERS[0]!.name,
+//         providerDetails: PROVIDERS[0]!.details,
+//         visitDateStart: new Date(2023, 1, 15),
+//         visitDateEnd: new Date(2023, 8, 30),
+//         status: "pending",
+//         requestType: "medical_records",
+//         priority: "urgent",
+//         vendorRouting: "MRO",
+//         createdAt: new Date(),
+//         notes: "Follow up needed with provider",
+//       }),
 
-      // Request 2: Normal in_progress request
-      db.insert(recordRequests).values({
-        projectId: projectId,
-        patientName: "Maria Garcia",
-        patientDob: new Date(1978, 7, 22),
-        providerName: PROVIDERS[1]!.name,
-        providerDetails: PROVIDERS[1]!.details,
-        visitDateStart: new Date(2023, 2, 10),
-        visitDateEnd: new Date(2023, 9, 15),
-        status: "in_progress",
-        requestType: "medical_records",
-        priority: "normal",
-        vendorRouting: "Datavant",
-        createdAt: new Date(),
-      }),
+//       // Request 2: Normal in_progress request
+//       db.insert(recordRequests).values({
+//         projectId: projectId,
+//         patientName: "Maria Garcia",
+//         patientDob: new Date(1978, 7, 22),
+//         providerName: PROVIDERS[1]!.name,
+//         providerDetails: PROVIDERS[1]!.details,
+//         visitDateStart: new Date(2023, 2, 10),
+//         visitDateEnd: new Date(2023, 9, 15),
+//         status: "in_progress",
+//         requestType: "medical_records",
+//         priority: "normal",
+//         vendorRouting: "Datavant",
+//         createdAt: new Date(),
+//       }),
 
-      // Request 3: Completed request
-      db.insert(recordRequests).values({
-        projectId: projectId,
-        patientName: "Robert Johnson",
-        patientDob: new Date(1982, 11, 3),
-        providerName: PROVIDERS[2]!.name,
-        providerDetails: PROVIDERS[2]!.details,
-        visitDateStart: new Date(2023, 3, 1),
-        visitDateEnd: new Date(2023, 10, 31),
-        status: "completed",
-        requestType: "medical_records",
-        priority: "normal",
-        vendorRouting: "HealthMark",
-        createdAt: new Date(),
-      })
-    ]);
-  }
+//       // Request 3: Completed request
+//       db.insert(recordRequests).values({
+//         projectId: projectId,
+//         patientName: "Robert Johnson",
+//         patientDob: new Date(1982, 11, 3),
+//         providerName: PROVIDERS[2]!.name,
+//         providerDetails: PROVIDERS[2]!.details,
+//         visitDateStart: new Date(2023, 3, 1),
+//         visitDateEnd: new Date(2023, 10, 31),
+//         status: "completed",
+//         requestType: "medical_records",
+//         priority: "normal",
+//         vendorRouting: "HealthMark",
+//         createdAt: new Date(),
+//       })
+//     ]);
+//   }
 
   console.log('Seed completed successfully');
 }
