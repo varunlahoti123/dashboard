@@ -7,9 +7,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { FolderPlus, UserPlus } from "lucide-react";
+import { FolderPlus, UserPlus, FileText } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CreateProjectForm } from "./components/create-project-form";
+import { createNewRecordRequest } from "@/app/_actions/record-requests";
+import { AddPatientForm } from "./components/add-patient-form";
 
 export const dynamic = 'force-dynamic'
 
@@ -32,66 +34,7 @@ async function RequestsContent() {
           <CreateProjectForm />
 
           {/* Add Patient Modal */}
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button variant="default">
-                <UserPlus className="h-4 w-4 mr-2" />
-                Add Patient
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[525px]">
-              <DialogHeader>
-                <DialogTitle>Add New Patient</DialogTitle>
-                <DialogDescription>
-                  Add a new patient to an existing project.
-                </DialogDescription>
-              </DialogHeader>
-              <div className="grid gap-4 py-4">
-                <div className="grid gap-2">
-                  <Label htmlFor="patient-name">Patient Name</Label>
-                  <Input id="patient-name" placeholder="Enter patient name" />
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="facility">Facility Name</Label>
-                  <Input id="facility" placeholder="Enter facility names" />
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="visit-dates">Visit Date Range</Label>
-                  <div className="flex gap-2 items-center">
-                    <div className="grid gap-1 flex-1">
-                      <Label htmlFor="start-date" className="text-sm">From</Label>
-                      <Input 
-                        id="start-date" 
-                        placeholder="Start date" 
-                        type="date" 
-                      />
-                    </div>
-                    <div className="grid gap-1 flex-1">
-                      <Label htmlFor="end-date" className="text-sm">To</Label>
-                      <Input 
-                        id="end-date" 
-                        placeholder="End date" 
-                        type="date" 
-                      />
-                    </div>
-                  </div>
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="project">Project</Label>
-                  <Select>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select project" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="project1">Medical Records Review 2024</SelectItem>
-                      <SelectItem value="project2">Insurance Review</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-              <Button className="w-full">Add Patient</Button>
-            </DialogContent>
-          </Dialog>
+          <AddPatientForm projects={projectsWithRequests} />
         </div>
       </div>
 
@@ -100,7 +43,20 @@ async function RequestsContent() {
         {projectsWithRequests.map((project) => (
           <Card key={project.id}>
             <CardHeader>
-              <CardTitle className="text-xl">Project: {project.name}</CardTitle>
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-xl">Project: {project.name}</CardTitle>
+                {project.letterRepresentationDocumentLocation && (
+                  <a
+                    href={project.letterRepresentationDocumentLocation}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-gray-500 hover:text-gray-700"
+                    title="Letter of Representation (opens in new tab)"
+                  >
+                    <FileText className="h-5 w-5" />
+                  </a>
+                )}
+              </div>
               <p className="text-sm text-muted-foreground">
                 {project.description}
               </p>

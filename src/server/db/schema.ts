@@ -189,5 +189,6 @@ export const hipaaAuthorizations = createTable(
 // Export the inferred types
 export type Project = InferSelectModel<typeof projects>;
 export type RecordRequest = InferSelectModel<typeof recordRequests>;
+export type InsertRecordRequest = typeof recordRequests.$inferInsert;
 
 

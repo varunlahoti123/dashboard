@@ -1,7 +1,8 @@
 import { db } from "./index";
-import { projects, recordRequests, type Project, type RecordRequest } from "./schema";
+import { InsertRecordRequest, projects, recordRequests, type Project, type RecordRequest } from "./schema";
 import { eq, inArray } from "drizzle-orm";
 import { ProjectFormValues } from "@/types/projects";
+import { RecordRequestFormValues } from "@/types/record-requests";
 
 export async function getProjectsByUserId(userId: string) {
   return await db
@@ -53,4 +54,26 @@ export async function createProject(userId: string, data: ProjectFormValues): Pr
     .returning();
 
   return newProject as Project;
+}
+
+export async function createRecordRequest(data: RecordRequestFormValues): Promise<RecordRequest> {
+  const [newRequest] = await db
+    .insert(recordRequests)
+    .values({
+      projectId: data.projectId,
+      patientName: data.patientName,
+      patientDob: new Date(data.patientDob).toISOString(),
+      providerName: data.providerName,
+      providerDetails: data.providerDetails,
+      visitDateStart: new Date(data.visitDateStart).toISOString(),
+      visitDateEnd: new Date(data.visitDateEnd).toISOString(),
+      requestType: data.requestType,
+      priority: data.priority,
+      status: "pending",
+    })
+    .returning();
+
+  if (!newRequest) throw new Error("Failed to create record request");
+
+  return newRequest;
 } 
