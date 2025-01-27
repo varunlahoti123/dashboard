@@ -14,7 +14,9 @@ export const recordRequestFormSchema = z.object({
   visitDateEnd: z.coerce.date(), // Coerces string input to Date
   requestType: z.enum(["medical_records", "billing", "images"]),
   priority: z.enum(["normal", "urgent"]),
-  status: z.enum(["pending", "in_progress", "completed", "failed", "cancelled"]).optional()
+  status: z.enum(["pending", "in_progress", "completed", "failed", "cancelled"]).optional(),
+  createdAt: z.coerce.date().optional(), // Added for display purposes
+  notes: z.string().optional()
 });
 
 export type RecordRequestFormValues = z.infer<typeof recordRequestFormSchema>;

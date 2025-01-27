@@ -32,6 +32,12 @@ export default function RootLayout({
                 </Link>
               </Button>
               <Button variant="ghost" className="w-full justify-start mb-2" asChild>
+                <Link href="/projects">
+                  <FileText className="mr-2 h-4 w-4" />
+                  Projects
+                </Link>
+              </Button>
+              <Button variant="ghost" className="w-full justify-start mb-2" asChild>
                 <Link href="/requests">
                   <FileText className="mr-2 h-4 w-4" />
                   Requests

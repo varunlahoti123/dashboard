@@ -29,5 +29,7 @@ export type ProjectWithRequests = {
     visitDateStart: string;
     visitDateEnd: string;
     status: "pending" | "in_progress" | "completed" | "failed" | "cancelled" | null;
+    createdAt: Date;
+    notes: string | null;
   }>;
 };

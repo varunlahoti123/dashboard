@@ -20,13 +20,13 @@ export function AddPatientForm({ projects }: { projects: ProjectWithRequests[] }
       <DialogTrigger asChild>
         <Button variant="default">
           <UserPlus className="h-4 w-4 mr-2" />
-          Add Patient
+          Add Record Request
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[525px]">
         <DialogHeader>
-          <DialogTitle>Add New Patient</DialogTitle>
-          <DialogDescription>Add a new patient to an existing project.</DialogDescription>
+          <DialogTitle>Add New Record Request</DialogTitle>
+          <DialogDescription>Add a new record request to an existing project.</DialogDescription>
         </DialogHeader>
         <form action={async (formData) => {
           await createNewRecordRequest(formData);

@@ -78,7 +78,7 @@ export default function DashboardPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Flagged Providers
+              Flagged Requests
             </CardTitle>
             <Flag className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
@@ -96,8 +96,8 @@ export default function DashboardPage() {
         <TabsList>
           <TabsTrigger value="requests">Recent Requests</TabsTrigger>
           <TabsTrigger value="analytics">Analytics</TabsTrigger>
-          <TabsTrigger value="documents">Document Traceability</TabsTrigger>
-          <TabsTrigger value="bulk-upload">Bulk Upload</TabsTrigger>
+          <TabsTrigger value="request-trace">Request Traceability</TabsTrigger>
+          {/* <TabsTrigger value="bulk-upload">Bulk Upload</TabsTrigger> */}
         </TabsList>
         <TabsContent value="requests" className="space-y-4">
           <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
@@ -163,65 +163,49 @@ export default function DashboardPage() {
             </Card>
           </div>
         </TabsContent>
-        <TabsContent value="documents" className="space-y-4">
+        <TabsContent value="request-trace" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>Document Traceability</CardTitle>
+              <CardTitle>Request Traceability</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 <div className="flex items-center space-x-4">
-                  <Label htmlFor="document-id">Document ID</Label>
-                  <Input id="document-id" placeholder="Enter document ID" />
+                  <Label htmlFor="request-id">Request ID</Label>
+                  <Input id="request-id" placeholder="Enter request ID" />
                   <Button>Trace</Button>
                 </div>
                 <div className="bg-gray-100 dark:bg-gray-700 p-4 rounded-md">
-                  <h4 className="font-semibold mb-2">Traceability Results</h4>
+                  <h4 className="font-semibold mb-2">Request Details</h4>
                   <p className="text-sm text-gray-600 dark:text-gray-300">
-                    Select a document to view its traceability information.
+                    Enter a request ID to view its timeline and associated charts.
                   </p>
                 </div>
               </div>
             </CardContent>
           </Card>
         </TabsContent>
-        <TabsContent value="bulk-upload">
+        {/* <TabsContent value="bulk-upload">
             <BulkUpload />
-        </TabsContent>
+        </TabsContent> */}
       </Tabs>
 
-      {/* Provider Packet Flagging */}
+      {/* Replace Provider Packet Flagging card */}
       <Card className="mt-6">
         <CardHeader>
-          <CardTitle>Provider Packet Flagging</CardTitle>
+          <CardTitle>Record Flagging</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex items-center space-x-4">
-            <Select>
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Select provider" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="general-hospital">General Hospital</SelectItem>
-                <SelectItem value="city-clinic">City Clinic</SelectItem>
-                <SelectItem value="community-health">Community Health Center</SelectItem>
-              </SelectContent>
-            </Select>
-            <Button>
-              <Flag className="h-4 w-4 mr-2" />
-              Flag Provider
-            </Button>
-          </div>
           <div className="mt-4">
-            <h4 className="font-semibold mb-2">Flagged Providers</h4>
+            <h4 className="font-semibold mb-2">Flagged Records</h4>
             <ul className="space-y-2">
               <li className="flex items-center">
                 <AlertCircle className="h-4 w-4 text-red-500 mr-2" />
-                Metro Medical Center
+                Request #12345 - John Doe
               </li>
               <li className="flex items-center">
                 <AlertCircle className="h-4 w-4 text-red-500 mr-2" />
-                Sunset Clinic
+                Request #12346 - Jane Smith
               </li>
             </ul>
           </div>

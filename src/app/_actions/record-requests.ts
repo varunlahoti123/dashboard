@@ -35,7 +35,7 @@ export async function createNewRecordRequest(formData: FormData) {
     }
 
     await createRecordRequest(parsed.data);
-    revalidatePath('/requests');
+    revalidatePath('/projects');
     
   } catch (error) {
     console.error('Record request creation error:', error);
