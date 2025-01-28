@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
   Select,
@@ -18,25 +18,61 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { ProjectWithRequests } from "@/types/projects"
-import { ChevronDown, ChevronUp } from "lucide-react"
+import { ChevronDown, ChevronUp, FileText } from "lucide-react"
 import React, { Suspense } from "react"
 import { AddPatientForm } from "./add-patient-form"
 import { HipaaAuthorization, HipaaAuthorizationSkeleton } from "./hipaa-authorization"
+import { ColumnDef } from "@/components/ui/table"
 
 const tableRowStyles = "transition-all duration-300 ease-in-out hover:bg-muted animate-in fade-in-0 cursor-pointer"
 
-type RequestWithProjectName = ProjectWithRequests['requests'][0] & { projectName: string };
+type RequestWithProjectName = ProjectWithRequests['requests'][0] & { 
+  projectName: string;
+  tempPatientId: string;
+};
+
+const columns: ColumnDef<RequestWithProjectName>[] = [
+  {
+    id: 'medicalChart',
+    header: 'Medical Chart',
+    cell: ({ row: { original: request } }) => (
+      request.status === 'completed' ? (
+        <a 
+          href="https://med.ucf.edu/media/2018/08/Sample-Adult-History-And-Physical-By-M2-Student.pdf"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex justify-center"
+        >
+          <FileText className="h-5 w-5 text-gray-600 hover:text-gray-900" />
+        </a>
+      ) : null
+    )
+  }
+]
 
 export function RequestsTable({ projectsWithRequests }: { projectsWithRequests: ProjectWithRequests[] }) {
   const [selectedProjectId, setSelectedProjectId] = useState<string>("all")
   const [expandedRequestId, setExpandedRequestId] = useState<string | null>(null)
   
-  const allRequests = projectsWithRequests.flatMap(project => 
-    project.requests.map(request => ({
-      ...request,
-      projectName: project.name
-    }))
-  ) as RequestWithProjectName[]
+  const patientIds = [
+    '#a1b2c3d4', '#e5f6g7h8', '#i9j0k1l2', '#m3n4o5p6', '#q7r8s9t0',
+    '#u1v2w3x4', '#y5z6a7b8', '#c9d0e1f2', '#g3h4i5j6', '#k7l8m9n0',
+    '#o1p2q3r4', '#s5t6u7v8', '#w9x0y1z2', '#a3b4c5d6', '#e7f8g9h0',
+    '#i1j2k3l4', '#m5n6o7p8', '#q9r0s1t2', '#u3v4w5x6', '#y7z8a9b0'
+  ];
+  
+  const allRequests = useMemo(() => {
+    const patientIdMap = new Map<string, string>();
+    let nextIdIndex = 0;
+
+    return projectsWithRequests.flatMap(project => 
+      project.requests.map(request => ({
+        ...request,
+        projectName: project.name,
+        tempPatientId: patientIdMap.get(request.patientName) ?? patientIds[nextIdIndex++ % patientIds.length]
+      }))
+    ) as RequestWithProjectName[];
+  }, [projectsWithRequests]);
 
   const filteredRequests = selectedProjectId === "all" 
     ? allRequests
@@ -75,11 +111,15 @@ export function RequestsTable({ projectsWithRequests }: { projectsWithRequests: 
             <TableHeader>
               <TableRow>
                 <TableHead></TableHead>
-                <TableHead>ID</TableHead>
+                <TableHead>Patient ID</TableHead>
+                <TableHead>Request ID</TableHead>
                 <TableHead>Project</TableHead>
                 <TableHead>Patient</TableHead>
                 <TableHead>Provider</TableHead>
-                <TableHead>Visit Dates</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Visit Date Range</TableHead>
+                <TableHead>Created Date</TableHead>
+                <TableHead>Medical Chart</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -96,35 +136,44 @@ export function RequestsTable({ projectsWithRequests }: { projectsWithRequests: 
                         <ChevronDown className="h-4 w-4" />
                       }
                     </TableCell>
+                    <TableCell className="font-medium">{request.tempPatientId}</TableCell>
                     <TableCell className="font-medium">#{request.id.slice(0, 8)}</TableCell>
                     <TableCell>{request.projectName}</TableCell>
                     <TableCell>{request.patientName}</TableCell>
                     <TableCell>{request.providerName}</TableCell>
                     <TableCell>
+                      <span className={`inline-flex px-2.5 py-1 rounded-full text-xs font-medium ${
+                        request.status === 'completed' ? 'bg-green-100 text-green-800' :
+                        request.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                        request.status === 'in_progress' ? 'bg-blue-100 text-blue-800' :
+                        'bg-gray-100 text-gray-800'
+                      }`}>
+                        {request.status?.split('_')
+                          .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                          .join(' ') ?? 'Unknown'}
+                      </span>
+                    </TableCell>
+                    <TableCell>
                       {new Date(request.visitDateStart).toLocaleDateString()} - {new Date(request.visitDateEnd).toLocaleDateString()}
+                    </TableCell>
+                    <TableCell>{new Date(request.createdAt).toLocaleDateString()}</TableCell>
+                    <TableCell>
+                      {request.status === 'completed' && (
+                        <a 
+                          href="https://med.ucf.edu/media/2018/08/Sample-Adult-History-And-Physical-By-M2-Student.pdf"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex justify-center"
+                        >
+                          <FileText className="h-5 w-5 text-gray-600 hover:text-gray-900" />
+                        </a>
+                      )}
                     </TableCell>
                   </TableRow>
                   {expandedRequestId === request.id && (
                     <TableRow className="bg-muted/50">
                       <TableCell colSpan={6}>
-                        <div className="py-3 px-4 grid grid-cols-4 gap-8">
-                          <div className="space-y-1">
-                            <p className="text-sm font-medium text-gray-500">Status</p>
-                            <span className={`inline-flex px-2.5 py-1 rounded-full text-xs font-medium ${
-                              request.status === 'completed' ? 'bg-green-100 text-green-800' :
-                              request.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                              request.status === 'in_progress' ? 'bg-blue-100 text-blue-800' :
-                              'bg-gray-100 text-gray-800'
-                            }`}>
-                              {request.status?.split('_')
-                                .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-                                .join(' ') ?? 'Unknown'}
-                            </span>
-                          </div>
-                          <div className="space-y-1">
-                            <p className="text-sm font-medium text-gray-500">Created</p>
-                            <p className="text-sm">{new Date(request.createdAt).toLocaleDateString()}</p>
-                          </div>
+                        <div className="py-3 px-4 grid grid-cols-2 gap-8">
                           <div className="space-y-1">
                             <p className="text-sm font-medium text-gray-500">Notes</p>
                             <p className="text-sm text-gray-700">{request.notes ?? 'No notes available'}</p>

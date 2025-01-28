@@ -39,13 +39,13 @@ export default function RootLayout({
               </Button>
               <Button variant="ghost" className="w-full justify-start mb-2" asChild>
                 <Link href="/requests">
-                  <FileText className="mr-2 h-4 w-4" />
+                  <Users className="mr-2 h-4 w-4" />
                   Requests
                 </Link>
               </Button>
               <Button variant="ghost" className="w-full justify-start mb-2" asChild>
                 <a>
-                  <Users className="mr-2 h-4 w-4" />
+                  <FileText className="mr-2 h-4 w-4" />
                   Providers
                 </a>
               </Button>

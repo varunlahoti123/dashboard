@@ -2,6 +2,12 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
+export type ColumnDef<TData> = {
+  id: string
+  header: string
+  cell: (props: { row: { original: TData } }) => React.ReactNode
+}
+
 const Table = React.forwardRef<
   HTMLTableElement,
   React.HTMLAttributes<HTMLTableElement>

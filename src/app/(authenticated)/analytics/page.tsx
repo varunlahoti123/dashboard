@@ -15,7 +15,7 @@ import { useState } from 'react'
 // Sample data for different projects
 const projectData = {
   project1: {
-    name: "Medical Records Review 2024",
+    name: "Personal Injury Cases",
     stats: {
       submitted: 245,
       submittedChange: "+12% from last week",
@@ -37,7 +37,7 @@ const projectData = {
     ]
   },
   project2: {
-    name: "Insurance Review",
+    name: "Medicare Appeals",
     stats: {
       submitted: 178,
       submittedChange: "+8% from last week",
@@ -58,28 +58,28 @@ const projectData = {
       { day: '7', records: 32 }
     ]
   },
-  project3: {
-    name: "Hospital Audit Project",
-    stats: {
-      submitted: 312,
-      submittedChange: "+20% from last week",
-      processing: 95,
-      processingChange: "Currently in progress",
-      delivered: 205,
-      deliveredChange: "+30% from last week",
-      failed: 12,
-      failedChange: "3.8% failure rate"
-    },
-    chartData: [
-      { day: '1', records: 10 },
-      { day: '2', records: 15 },
-      { day: '3', records: 25 },
-      { day: '4', records: 30 },
-      { day: '5', records: 45 },
-      { day: '6', records: 50 },
-      { day: '7', records: 65 }
-    ]
-  }
+  // project3: {
+  //   name: "Hospital Audit Project",
+  //   stats: {
+  //     submitted: 312,
+  //     submittedChange: "+20% from last week",
+  //     processing: 95,
+  //     processingChange: "Currently in progress",
+  //     delivered: 205,
+  //     deliveredChange: "+30% from last week",
+  //     failed: 12,
+  //     failedChange: "3.8% failure rate"
+  //   },
+  //   chartData: [
+  //     { day: '1', records: 10 },
+  //     { day: '2', records: 15 },
+  //     { day: '3', records: 25 },
+  //     { day: '4', records: 30 },
+  //     { day: '5', records: 45 },
+  //     { day: '6', records: 50 },
+  //     { day: '7', records: 65 }
+  //   ]
+  // }
 }
 
 type ProjectKey = keyof typeof projectData;
@@ -101,9 +101,9 @@ export default function AnalyticsPage() {
               <SelectValue placeholder="Select project" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="project1">Medical Records Review 2024</SelectItem>
-              <SelectItem value="project2">Insurance Review</SelectItem>
-              <SelectItem value="project3">Hospital Audit Project</SelectItem>
+              <SelectItem value="project1">Personal Injury Cases</SelectItem>
+              <SelectItem value="project2">Medicare Appeals</SelectItem>
+              {/* <SelectItem value="project3">Hospital Audit Project</SelectItem> */}
             </SelectContent>
           </Select>
         </div>
