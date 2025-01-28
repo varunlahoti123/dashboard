@@ -123,3 +123,17 @@ export async function updateRecordRequestNotes(requestId: string, notes: string)
     .returning();
   return updated;
 }
+
+export async function updateProject(projectId: string, data: { 
+  name?: string; 
+  description?: string;
+  letterRepresentationDocumentLocation?: string | null;
+  requestLetterDocumentLocation?: string | null;
+}) {
+  const [updated] = await db
+    .update(projects)
+    .set(data)
+    .where(eq(projects.id, projectId))
+    .returning();
+  return updated;
+}
