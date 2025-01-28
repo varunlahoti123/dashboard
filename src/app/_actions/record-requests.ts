@@ -18,12 +18,11 @@ export async function createNewRecordRequest(formData: FormData) {
       patientName: formData.get("patient-name"),
       patientDob: formData.get("patient-dob"),
       providerName: formData.get("facility"),
-    // Because the form does not have these fields at the moment
-    //   providerDetails: {
-    //     address: formData.get("facility-address"),
-    //     phone: formData.get("facility-phone"),
-    //     fax: formData.get("facility-fax"),
-    //   },
+      providerDetails: {
+      address: formData.get("facility-address"),
+        phone: '',
+        fax: '',
+    },
       visitDateStart: formData.get("start-date"),
       visitDateEnd: formData.get("end-date"),
       requestType: "medical_records",

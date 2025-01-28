@@ -7,8 +7,8 @@ export const recordRequestFormSchema = z.object({
   providerName: z.string().min(1),
   providerDetails: z.object({
     address: z.string(),
-    phone: z.string(),
-    fax: z.string(),
+    phone: z.string().optional(),
+    fax: z.string().optional(),
   }).optional(),
   visitDateStart: z.coerce.date(), // Coerces string input to Date
   visitDateEnd: z.coerce.date(), // Coerces string input to Date

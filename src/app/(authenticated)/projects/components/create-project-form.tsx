@@ -19,22 +19,28 @@ export function CreateProjectForm({ onSuccess }: { onSuccess?: () => void }) {
   const [open, setOpen] = useState(false);
   const { toast } = useToast();
   
-  const { register, handleSubmit, reset } = useForm<ProjectFormValues>({
+  const { 
+    register, 
+    handleSubmit, 
+    reset,
+    formState: { errors } 
+  } = useForm<ProjectFormValues>({
     resolver: zodResolver(projectFormSchema),
   });
 
   const onSubmit = async (data: ProjectFormValues) => {
+    console.log('Form data received:', data);
+    
     const formData = new FormData();
     formData.append("name", data.name);
-    if (data.description) formData.append("description", data.description);
-    if (typeof data.letterOfRepresentation === 'string') {
-      formData.append("letterOfRepresentation", data.letterOfRepresentation);
-    }
-    if (typeof data.requestLetter === 'string') {
-      formData.append("requestLetter", data.requestLetter);
-    }
-
+    formData.append("description", data.description ?? '');
+    if (data.letterOfRepresentation) formData.append("letterOfRepresentation", String(data.letterOfRepresentation));
+    if (data.requestLetter) formData.append("requestLetter", String(data.requestLetter));
+    
+    console.log('FormData entries:', [...formData.entries()]);
+    
     const result = await createNewProject(formData);
+    console.log('Server response:', result);
     
     if (result.success) {
       toast({
@@ -46,6 +52,7 @@ export function CreateProjectForm({ onSuccess }: { onSuccess?: () => void }) {
       router.refresh();
       onSuccess?.();
     } else {
+      console.error('Error details:', result.error);
       toast({
         title: "Error",
         description: result.error,
@@ -71,12 +78,20 @@ export function CreateProjectForm({ onSuccess }: { onSuccess?: () => void }) {
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="grid gap-2">
-            <Label htmlFor="name">Name</Label>
-            <Input id="name" {...register("name")} />
+            <Label htmlFor="name">Name *</Label>
+            <Input 
+              id="name" 
+              {...register("name", { required: "Name is required" })}
+              className={errors.name ? "border-red-500" : ""} 
+            />
+            {errors.name && <p className="text-sm text-red-500">{errors.name.message}</p>}
           </div>
           <div className="grid gap-2">
             <Label htmlFor="description">Description</Label>
-            <Textarea id="description" {...register("description")} />
+            <Textarea 
+              id="description" 
+              {...register("description")} 
+            />
           </div>
           <div className="grid gap-2">
             <Label htmlFor="letterOfRepresentation">Letter of Representation URL</Label>

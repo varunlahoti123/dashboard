@@ -67,7 +67,11 @@ export async function createRecordRequest(data: RecordRequestFormValues): Promis
       patientName: data.patientName,
       patientDob: new Date(data.patientDob).toISOString(),
       providerName: data.providerName,
-      providerDetails: data.providerDetails,
+      providerDetails: {
+        address: data.providerDetails?.address ?? '',
+        phone: '',
+        fax: '',
+      },
       visitDateStart: new Date(data.visitDateStart).toISOString(),
       visitDateEnd: new Date(data.visitDateEnd).toISOString(),
       requestType: data.requestType,
