@@ -26,22 +26,6 @@ import { type InferSelectModel } from "drizzle-orm";
  */
 export const createTable = pgTableCreator((name) => `dashboard_${name}`);
 
-export const posts = createTable(
-  "post",
-  {
-    id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
-    name: varchar("name", { length: 256 }),
-    createdAt: timestamp("created_at", { withTimezone: true })
-      .default(sql`CURRENT_TIMESTAMP`)
-      .notNull(),
-    updatedAt: timestamp("updated_at", { withTimezone: true }).$onUpdate(
-      () => new Date()
-    ),
-  },
-  (example) => ({
-    nameIndex: index("name_idx").on(example.name),
-  })
-);
 
 export const users = createTable(
   "user",
@@ -108,7 +92,11 @@ export const projects = createTable(
       .notNull(),
     updatedAt: timestamp("updated_at", { withTimezone: true }),
     organizationId: uuid("organization_id"),
+    //Letter of Representation: States that Hermes has the right to request a record on behalf of the submitting entity
     letterRepresentationDocumentLocation: varchar("letter_representation_document_location", { length: 2048 }),
+    //Request Letter: The letter states the purpose of the request to provide context to the provider
+    requestLetterDocumentLocation: varchar("request_letter_document_location", { length: 2048 }),
+
   },
   (table) => ({
     userIdIdx: index("user_id_idx").on(table.userId),

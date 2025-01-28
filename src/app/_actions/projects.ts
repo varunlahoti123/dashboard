@@ -36,6 +36,7 @@ export async function createNewProject(formData: FormData) {
       name: formData.get("name"),
       description: formData.get("description"),
       letterOfRepresentation: formData.get("letterOfRepresentation"),
+      requestLetter: formData.get("requestLetter"),
     });
 
     if (!parsed.success) {

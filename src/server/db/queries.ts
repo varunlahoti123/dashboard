@@ -50,6 +50,9 @@ export async function createProject(userId: string, data: ProjectFormValues): Pr
       letterRepresentationDocumentLocation: typeof data.letterOfRepresentation === 'string' 
         ? data.letterOfRepresentation 
         : null,
+      requestLetterDocumentLocation: typeof data.requestLetter === 'string' 
+        ? data.requestLetter 
+        : null,
     })
     .returning();
 

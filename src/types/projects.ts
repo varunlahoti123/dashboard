@@ -10,6 +10,7 @@ export const projectFormSchema = z.object({
   name: z.string().min(1, "Project name is required"),
   description: z.string().optional(),
   letterOfRepresentation: z.any().optional(),
+  requestLetter: z.any().optional(),
 });
 
 // Type extracted from the form schema for use in components
@@ -22,6 +23,7 @@ export type ProjectWithRequests = {
   name: string;
   description: string | null;
   letterRepresentationDocumentLocation: string | null;
+  requestLetterDocumentLocation: string | null;
   requests: Array<{
     id: string;
     patientName: string;

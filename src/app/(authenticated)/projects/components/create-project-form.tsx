@@ -30,6 +30,9 @@ export function CreateProjectForm({ onSuccess }: { onSuccess?: () => void }) {
     if (typeof data.letterOfRepresentation === 'string') {
       formData.append("letterOfRepresentation", data.letterOfRepresentation);
     }
+    if (typeof data.requestLetter === 'string') {
+      formData.append("requestLetter", data.requestLetter);
+    }
 
     const result = await createNewProject(formData);
     
@@ -81,6 +84,14 @@ export function CreateProjectForm({ onSuccess }: { onSuccess?: () => void }) {
               id="letterOfRepresentation" 
               placeholder="https://example.com/letter.pdf"
               {...register("letterOfRepresentation")} 
+            />
+          </div>
+          <div className="grid gap-2">
+            <Label htmlFor="requestLetter">Request Letter URL</Label>
+            <Input 
+              id="requestLetter" 
+              placeholder="https://example.com/request-letter.pdf"
+              {...register("requestLetter")} 
             />
           </div>
           <Button type="submit" className="w-full">Create Project</Button>
