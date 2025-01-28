@@ -43,12 +43,7 @@ export default function RootLayout({
                   Requests
                 </Link>
               </Button>
-              <Button variant="ghost" className="w-full justify-start mb-2" asChild>
-                <a>
-                  <FileText className="mr-2 h-4 w-4" />
-                  Providers
-                </a>
-              </Button>
+              
               <Button variant="ghost" className="w-full justify-start mb-2" asChild>
                 <Link href="/analytics">
                   <BarChart3 className="mr-2 h-4 w-4" />

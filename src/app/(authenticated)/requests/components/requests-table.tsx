@@ -23,6 +23,9 @@ import React, { Suspense } from "react"
 import { AddPatientForm } from "./add-patient-form"
 import { HipaaAuthorization, HipaaAuthorizationSkeleton } from "./hipaa-authorization"
 import { ColumnDef } from "@/components/ui/table"
+import { useFilterStore } from "./filter-store"
+import { RequestsFilters } from "./requests-filters"
+import { EditNotes } from "./edit-notes"
 
 const tableRowStyles = "transition-all duration-300 ease-in-out hover:bg-muted animate-in fade-in-0 cursor-pointer"
 
@@ -53,6 +56,7 @@ const columns: ColumnDef<RequestWithProjectName>[] = [
 export function RequestsTable({ projectsWithRequests }: { projectsWithRequests: ProjectWithRequests[] }) {
   const [selectedProjectId, setSelectedProjectId] = useState<string>("all")
   const [expandedRequestId, setExpandedRequestId] = useState<string | null>(null)
+  const { selectedStatuses } = useFilterStore()
   
   const patientIds = [
     '#a1b2c3d4', '#e5f6g7h8', '#i9j0k1l2', '#m3n4o5p6', '#q7r8s9t0',
@@ -65,27 +69,30 @@ export function RequestsTable({ projectsWithRequests }: { projectsWithRequests: 
     const patientIdMap = new Map<string, string>();
     let nextIdIndex = 0;
 
-    return projectsWithRequests.flatMap(project => 
-      project.requests.map(request => ({
-        ...request,
-        projectName: project.name,
-        tempPatientId: patientIdMap.get(request.patientName) ?? patientIds[nextIdIndex++ % patientIds.length]
-      }))
-    ) as RequestWithProjectName[];
+    return projectsWithRequests
+      .flatMap(project => 
+        project.requests.map(request => ({
+          ...request,
+          projectName: project.name,
+          tempPatientId: patientIdMap.get(request.patientName) ?? patientIds[nextIdIndex++ % patientIds.length]
+        }))
+      )
+      .sort((a, b) => a.id.localeCompare(b.id)) as RequestWithProjectName[];
   }, [projectsWithRequests]);
 
-  const filteredRequests = selectedProjectId === "all" 
-    ? allRequests
-    : allRequests.filter(request => 
-        projectsWithRequests.find(p => p.id === selectedProjectId)?.requests.some(r => r.id === request.id)
-      )
+  const filteredRequests = useMemo(() => {
+    const requests = selectedProjectId === "all" 
+      ? allRequests
+      : allRequests.filter(r => projectsWithRequests.find(p => p.id === selectedProjectId)?.requests.some(req => req.id === r.id));
+    
+    return (selectedStatuses.length ? requests.filter(r => r.status && selectedStatuses.includes(r.status)) : requests);
+  }, [selectedProjectId, allRequests, projectsWithRequests, selectedStatuses]);
 
   return (
     <>
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-semibold text-gray-800">Record Requests</h2>
-        <div className="flex items-center gap-4">
-          <AddPatientForm projects={projectsWithRequests}/>
+        <div className="flex items-center gap-6">
+          <RequestsFilters />
           <Select value={selectedProjectId} onValueChange={setSelectedProjectId}>
             <SelectTrigger className="w-[280px]">
               <SelectValue placeholder="Filter by project" />
@@ -100,6 +107,7 @@ export function RequestsTable({ projectsWithRequests }: { projectsWithRequests: 
             </SelectContent>
           </Select>
         </div>
+        <AddPatientForm projects={projectsWithRequests}/>
       </div>
 
       <Card>
@@ -149,7 +157,7 @@ export function RequestsTable({ projectsWithRequests }: { projectsWithRequests: 
                         'bg-gray-100 text-gray-800'
                       }`}>
                         {request.status?.split('_')
-                          .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                          .map(word => (word?.[0] ?? '').toUpperCase() + (word?.slice(1) || ''))
                           .join(' ') ?? 'Unknown'}
                       </span>
                     </TableCell>
@@ -176,7 +184,7 @@ export function RequestsTable({ projectsWithRequests }: { projectsWithRequests: 
                         <div className="py-3 px-4 grid grid-cols-2 gap-8">
                           <div className="space-y-1">
                             <p className="text-sm font-medium text-gray-500">Notes</p>
-                            <p className="text-sm text-gray-700">{request.notes ?? 'No notes available'}</p>
+                            <EditNotes requestId={request.id} initialNotes={request.notes ?? undefined} />
                           </div>
                           <div className="space-y-1">
                             <Suspense fallback={<HipaaAuthorizationSkeleton />}>

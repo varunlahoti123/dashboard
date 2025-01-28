@@ -1,7 +1,7 @@
 "use server"
 
 import { auth } from "@clerk/nextjs/server";
-import { createRecordRequest, createHipaaAuthorization } from "@/server/db/queries";
+import { createRecordRequest, createHipaaAuthorization, updateRecordRequestNotes } from "@/server/db/queries";
 import { recordRequestFormSchema } from "@/types/record-requests";
 import { hipaaAuthorizationFormSchema } from "@/types/hipaa";
 import { revalidatePath } from "next/cache";
@@ -90,4 +90,12 @@ export async function getUserProjectsWithRecordRequests() {
     console.error('Error fetching projects with requests:', error);
     throw error;
   }
+}
+
+export async function updateNotes(requestId: string, notes: string) {
+  const { userId } = await auth();
+  if (!userId) throw new Error("Unauthorized");
+  
+  await updateRecordRequestNotes(requestId, notes);
+  revalidatePath('/requests');
 } 

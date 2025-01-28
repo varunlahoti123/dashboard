@@ -114,3 +114,12 @@ export async function getHipaaAuthorizationByRequestId(requestId: string) {
 
   return authorization;
 }
+
+export async function updateRecordRequestNotes(requestId: string, notes: string) {
+  const [updated] = await db
+    .update(recordRequests)
+    .set({ notes })
+    .where(eq(recordRequests.id, requestId))
+    .returning();
+  return updated;
+}
