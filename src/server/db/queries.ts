@@ -3,6 +3,8 @@ import { InsertRecordRequest, projects, recordRequests, type Project, type Recor
 import { eq, inArray } from "drizzle-orm";
 import { ProjectFormValues } from "@/types/projects";
 import { RecordRequestFormValues } from "@/types/record-requests";
+import { HipaaAuthorizationFormValues } from "@/types/hipaa";
+import { hipaaAuthorizations } from "./schema";
 
 export async function getProjectsByUserId(userId: string) {
   return await db
@@ -12,17 +14,18 @@ export async function getProjectsByUserId(userId: string) {
     .orderBy(projects.createdAt);
 }
 
-export async function getRecordRequestsByProjectIds(projectIds: string[]) {
+export async function getRecordRequestsByProjectIds(projectIds: string[]): Promise<RecordRequest[]> {
   if (projectIds.length === 0) return [];
   
-  return await db
+  const requests = await db
     .select()
     .from(recordRequests)
     .where(
-      // Using in operator for multiple project IDs
       inArray(recordRequests.projectId, projectIds)
     )
     .orderBy(recordRequests.createdAt);
+
+  return requests;
 }
 
 // Combined function to get all data in one query
@@ -83,4 +86,31 @@ export async function createRecordRequest(data: RecordRequestFormValues): Promis
   if (!newRequest) throw new Error("Failed to create record request");
 
   return newRequest;
-} 
+}
+
+export async function createHipaaAuthorization(data: HipaaAuthorizationFormValues) {
+  const [newAuthorization] = await db
+    .insert(hipaaAuthorizations)
+    .values({
+      recordRequestId: data.recordRequestId,
+      projectId: data.projectId,
+      hipaaAuthorizationLocation: data.hipaaAuthorizationLocation,
+      expirationDate: data.expirationDate ? new Date(data.expirationDate).toISOString() : null,
+      status: data.status,
+    })
+    .returning();
+
+  if (!newAuthorization) throw new Error("Failed to create HIPAA authorization");
+
+  return newAuthorization;
+}
+
+export async function getHipaaAuthorizationByRequestId(requestId: string) {
+  const [authorization] = await db
+    .select()
+    .from(hipaaAuthorizations)
+    .where(eq(hipaaAuthorizations.recordRequestId, requestId))
+    .limit(1);
+
+  return authorization;
+}

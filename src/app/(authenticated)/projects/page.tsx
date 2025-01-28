@@ -1,4 +1,4 @@
-import { getProjectsWithRequests } from "@/app/_actions/projects";
+import { getProjects } from "@/app/_actions/projects";
 import { Suspense } from "react";
 import LoadingRequests from "./loading";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -16,7 +16,7 @@ export default async function ProjectsPage() {
 }
 
 async function ProjectsContent() {
-  const projectsWithRequests = await getProjectsWithRequests();
+  const projects = await getProjects();
 
   return (
     <>
@@ -26,7 +26,7 @@ async function ProjectsContent() {
       </div>
 
       <div className="space-y-6">
-        {projectsWithRequests.map((project) => (
+        {projects.map((project) => (
           <Card key={project.id}>
             <CardHeader>
               <div className="flex items-center justify-between">
@@ -72,7 +72,7 @@ async function ProjectsContent() {
             </CardContent>
           </Card>
         ))}
-        {projectsWithRequests.length === 0 && (
+        {projects.length === 0 && (
           <div className="text-center p-8 bg-gray-50 rounded-lg">
             <p className="text-gray-500">No projects found</p>
           </div>

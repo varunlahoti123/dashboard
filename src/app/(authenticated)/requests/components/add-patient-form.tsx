@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { UserPlus } from "lucide-react";
-import { createNewRecordRequest } from "@/app/_actions/record-requests";
+import { createNewRecordRequest, createNewHipaaAuthorization } from "@/app/_actions/record-requests";
 import { ProjectWithRequests } from "@/types/projects";
 
 export function AddPatientForm({ projects }: { projects: ProjectWithRequests[] }) {
@@ -29,9 +29,26 @@ export function AddPatientForm({ projects }: { projects: ProjectWithRequests[] }
           <DialogDescription>Add a new record request to an existing project.</DialogDescription>
         </DialogHeader>
         <form action={async (formData) => {
-          await createNewRecordRequest(formData);
-          setOpen(false);
-          router.refresh();
+          try {
+            // First create the record request
+            const recordRequest = await createNewRecordRequest(formData);
+            
+            // Then create the HIPAA authorization using the new record request ID
+            const hipaaFormData = new FormData();
+            hipaaFormData.append("record-request-id", recordRequest.id);
+            hipaaFormData.append("project-id", formData.get("project") as string);
+            hipaaFormData.append("hipaa-auth-url", formData.get("hipaa-auth-url") as string);
+            hipaaFormData.append("expiration-date", formData.get("expiration-date") as string);
+            
+            await createNewHipaaAuthorization(hipaaFormData);
+            
+            setOpen(false);
+            router.refresh();
+          } catch (error) {
+            console.error("Error creating record request with HIPAA authorization:", error);
+            // You might want to add error handling UI here
+            throw error;
+          }
         }}>
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
@@ -111,6 +128,26 @@ export function AddPatientForm({ projects }: { projects: ProjectWithRequests[] }
                   ))}
                 </SelectContent>
               </Select>
+            </div>
+            <div className="grid gap-4 py-4">
+              <div className="grid gap-2">
+                <Label htmlFor="hipaa-auth-url">HIPAA Authorization Document URL</Label>
+                <Input 
+                  name="hipaa-auth-url" 
+                  id="hipaa-auth-url" 
+                  type="url"
+                  placeholder="https://example.com/hipaa-auth.pdf"
+                  required
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="expiration-date">Authorization Expiration Date</Label>
+                <Input 
+                  name="expiration-date" 
+                  id="expiration-date" 
+                  type="date"
+                />
+              </div>
             </div>
           </div>
           <Button type="submit" className="w-full">Add Patient</Button>

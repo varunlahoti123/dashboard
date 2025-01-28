@@ -19,8 +19,9 @@ import {
 } from "@/components/ui/table"
 import { ProjectWithRequests } from "@/types/projects"
 import { ChevronDown, ChevronUp } from "lucide-react"
-import React from "react"
+import React, { Suspense } from "react"
 import { AddPatientForm } from "./add-patient-form"
+import { HipaaAuthorization, HipaaAuthorizationSkeleton } from "./hipaa-authorization"
 
 const tableRowStyles = "transition-all duration-300 ease-in-out hover:bg-muted animate-in fade-in-0 cursor-pointer"
 
@@ -106,7 +107,7 @@ export function RequestsTable({ projectsWithRequests }: { projectsWithRequests: 
                   {expandedRequestId === request.id && (
                     <TableRow className="bg-muted/50">
                       <TableCell colSpan={6}>
-                        <div className="py-3 px-4 grid grid-cols-3 gap-8">
+                        <div className="py-3 px-4 grid grid-cols-4 gap-8">
                           <div className="space-y-1">
                             <p className="text-sm font-medium text-gray-500">Status</p>
                             <span className={`inline-flex px-2.5 py-1 rounded-full text-xs font-medium ${
@@ -127,6 +128,11 @@ export function RequestsTable({ projectsWithRequests }: { projectsWithRequests: 
                           <div className="space-y-1">
                             <p className="text-sm font-medium text-gray-500">Notes</p>
                             <p className="text-sm text-gray-700">{request.notes ?? 'No notes available'}</p>
+                          </div>
+                          <div className="space-y-1">
+                            <Suspense fallback={<HipaaAuthorizationSkeleton />}>
+                              <HipaaAuthorization requestId={request.id} />
+                            </Suspense>
                           </div>
                         </div>
                       </TableCell>
