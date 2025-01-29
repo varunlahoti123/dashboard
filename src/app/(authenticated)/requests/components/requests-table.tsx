@@ -20,12 +20,13 @@ import {
 import { ProjectWithRequests } from "@/types/projects"
 import { ChevronDown, ChevronUp, FileText } from "lucide-react"
 import React, { Suspense } from "react"
-import { AddPatientForm } from "./add-patient-form"
 import { HipaaAuthorization, HipaaAuthorizationSkeleton } from "./hipaa-authorization"
 import { ColumnDef } from "@/components/ui/table"
 import { useFilterStore } from "./filter-store"
 import { RequestsFilters } from "./requests-filters"
 import { EditNotes } from "./edit-notes"
+import { AddPatientForm } from "./add-patient-form"
+import { RecordRequestsBulkActions } from "./record-requests-bulk-actions"
 
 const tableRowStyles = "transition-all duration-300 ease-in-out hover:bg-muted animate-in fade-in-0 cursor-pointer"
 
@@ -107,7 +108,11 @@ export function RequestsTable({ projectsWithRequests }: { projectsWithRequests: 
             </SelectContent>
           </Select>
         </div>
-        <AddPatientForm projects={projectsWithRequests}/>
+        <div className="flex items-center gap-4">
+          <AddPatientForm projects={projectsWithRequests} />
+          <RecordRequestsBulkActions projects={projectsWithRequests} />
+          
+        </div>
       </div>
 
       <Card>

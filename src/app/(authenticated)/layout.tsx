@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Home, FileText, Users, BarChart3, Settings } from 'lucide-react'
 import Link from 'next/link'
 import { ClerkProvider, UserButton } from "@clerk/nextjs"
+import { Toaster } from "sonner"
 
 export default function RootLayout({
   children,
@@ -70,6 +71,7 @@ export default function RootLayout({
           <main className="flex-1 p-8 overflow-auto">
             {children}
           </main>
+          <Toaster />
         </div>
       </body>
     </html>

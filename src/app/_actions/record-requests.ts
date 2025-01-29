@@ -1,11 +1,32 @@
 "use server"
 
 import { auth } from "@clerk/nextjs/server";
-import { createRecordRequest, createHipaaAuthorization, updateRecordRequestNotes } from "@/server/db/queries";
+import { createRecordRequest, createHipaaAuthorization, updateRecordRequestNotes, createBulkRecordRequests, createBulkHipaaAuthorizations, type BulkRecordRequestInput } from "@/server/db/queries";
 import { recordRequestFormSchema } from "@/types/record-requests";
 import { hipaaAuthorizationFormSchema } from "@/types/hipaa";
 import { revalidatePath } from "next/cache";
-import { getUserProjectsWithRequests } from "@/server/db/queries";
+import { getUserProjectsWithRequests, getProjectsByUserId } from "@/server/db/queries";
+import { parse } from 'csv-parse/sync';
+
+interface CsvRecord {
+  projectId: string;
+  patientName: string;
+  patientDob: string;
+  providerName: string;
+  providerAddress: string;
+  visitDateStart: string;
+  visitDateEnd: string;
+}
+
+interface CsvRow {
+  projectName: string;
+  patientName: string;
+  patientDob: string;
+  providerName: string;
+  providerAddress: string;
+  visitDateStart: string;
+  visitDateEnd: string;
+}
 
 export async function createNewRecordRequest(formData: FormData) {
   try {
@@ -98,4 +119,51 @@ export async function updateNotes(requestId: string, notes: string) {
   
   await updateRecordRequestNotes(requestId, notes);
   revalidatePath('/requests');
+}
+
+export async function createBulkRecordRequestsFromCsv(formData: FormData) {
+  const { userId } = await auth();
+  if (!userId) throw new Error("Unauthorized");
+
+  const projectMap = await getProjectNameToIdMap(userId);
+  const file = formData.get('file') as File;
+  if (!file) throw new Error('No file provided');
+
+  const text = await file.text();
+  const records = parse(text, { columns: true, skip_empty_lines: true }) as CsvRow[];
+
+  const invalidProjects = records
+    .filter(r => !projectMap.has(r.projectName))
+    .map(r => r.projectName);
+  
+  if (invalidProjects.length > 0) {
+    throw new Error(`Invalid project names: ${invalidProjects.join(', ')}`);
+  }
+
+  const requests = records.map(record => ({
+    projectId: projectMap.get(record.projectName)!,
+    patientName: record.patientName,
+    patientDob: new Date(record.patientDob),
+    providerName: record.providerName,
+    providerDetails: { address: record.providerAddress },
+    visitDateStart: new Date(record.visitDateStart),
+    visitDateEnd: new Date(record.visitDateEnd),
+  }));
+
+  const newRequests = await createBulkRecordRequests(requests);
+  console.info('[BULK_UPLOAD] Created count:', newRequests.length);
+  revalidatePath('/requests');
+  return newRequests.length;
+}
+
+export async function getRecordRequestTemplate() {
+  return [
+    'projectName,patientName,patientDob,providerName,providerAddress,visitDateStart,visitDateEnd',
+    'Project A,John Doe,1990-01-01,Medical Center,123 Health St,2024-01-01,2024-01-31'
+  ].join('\n');
+}
+
+async function getProjectNameToIdMap(userId: string) {
+  const projects = await getProjectsByUserId(userId);
+  return new Map(projects.map(p => [p.name, p.id]));
 } 

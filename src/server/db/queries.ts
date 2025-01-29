@@ -137,3 +137,47 @@ export async function updateProject(projectId: string, data: {
     .returning();
   return updated;
 }
+
+type BulkRecordRequestInput = Array<Omit<RecordRequestFormValues, 'requestType' | 'priority'>>;
+
+export type { BulkRecordRequestInput };
+
+export async function createBulkRecordRequests(requests: BulkRecordRequestInput): Promise<RecordRequest[]> {
+  const values = requests.map(data => ({
+    projectId: data.projectId,
+    patientName: data.patientName,
+    patientDob: new Date(data.patientDob).toISOString(),
+    providerName: data.providerName,
+    providerDetails: {
+      address: data.providerDetails?.address ?? '',
+      phone: '',
+      fax: '',
+    },
+    visitDateStart: new Date(data.visitDateStart).toISOString(),
+    visitDateEnd: new Date(data.visitDateEnd).toISOString(),
+    requestType: "medical_records" as const,
+    priority: "normal" as const,
+    status: "pending" as const,
+  }));
+
+  const newRequests = await db
+    .insert(recordRequests)
+    .values(values)
+    .returning();
+
+  return newRequests;
+}
+
+export async function createBulkHipaaAuthorizations(authorizations: HipaaAuthorizationFormValues[]) {
+  const values = authorizations.map(auth => ({
+    ...auth,
+    expirationDate: auth.expirationDate ? new Date(auth.expirationDate).toISOString() : null,
+  }));
+
+  const newAuthorizations = await db
+    .insert(hipaaAuthorizations)
+    .values(values)
+    .returning();
+
+  return newAuthorizations;
+}
