@@ -26,6 +26,8 @@ interface CsvRow {
   providerAddress: string;
   visitDateStart: string;
   visitDateEnd: string;
+  hipaaAuthorizationLocation?: string;
+  hipaaExpirationDate?: string;
 }
 
 export async function createNewRecordRequest(formData: FormData) {
@@ -151,6 +153,26 @@ export async function createBulkRecordRequestsFromCsv(formData: FormData) {
   }));
 
   const newRequests = await createBulkRecordRequests(requests);
+
+  // Create HIPAA authorizations for records that have them
+  const hipaaAuths = records
+    .map((r, i) => {
+      const request = newRequests[i];
+      if (!r.hipaaAuthorizationLocation || !request) return null;
+      return {
+        recordRequestId: request.id,
+        projectId: request.projectId,
+        hipaaAuthorizationLocation: r.hipaaAuthorizationLocation,
+        expirationDate: r.hipaaExpirationDate ? new Date(r.hipaaExpirationDate) : undefined,
+        status: 'valid' as const,
+      };
+    })
+    .filter((auth): auth is NonNullable<typeof auth> => auth !== null);
+
+  if (hipaaAuths.length > 0) {
+    await createBulkHipaaAuthorizations(hipaaAuths);
+  }
+  
   console.info('[BULK_UPLOAD] Created count:', newRequests.length);
   revalidatePath('/requests');
   return newRequests.length;
@@ -158,8 +180,8 @@ export async function createBulkRecordRequestsFromCsv(formData: FormData) {
 
 export async function getRecordRequestTemplate() {
   return [
-    'projectName,patientName,patientDob,providerName,providerAddress,visitDateStart,visitDateEnd',
-    'Project A,John Doe,1990-01-01,Medical Center,123 Health St,2024-01-01,2024-01-31'
+    'projectName,patientName,patientDob,providerName,providerAddress,visitDateStart,visitDateEnd,hipaaAuthorizationLocation,hipaaExpirationDate',
+    'Project A,John Doe,1990-01-01,Medical Center,123 Health St,2024-01-01,2024-01-31,https://example.com/hipaa.pdf,2025-01-01'
   ].join('\n');
 }
 

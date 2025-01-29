@@ -17,6 +17,7 @@ interface CsvRow {
   providerAddress: string;
   visitDateStart: string;
   visitDateEnd: string;
+  hipaaAuthorizationLocation?: string;
 }
 
 export function RecordRequestsBulkActions({ projects }: { projects: ProjectWithRequests[] }) {
@@ -32,7 +33,8 @@ export function RecordRequestsBulkActions({ projects }: { projects: ProjectWithR
       r.projectName?.trim() !== '' && 
       r.patientName?.trim() !== '' && 
       r.patientDob?.trim() !== '' && 
-      r.providerName?.trim() !== ''
+      r.providerName?.trim() !== '' &&
+      (r.hipaaAuthorizationLocation ?? '').startsWith('http')
     );
     
     const projectNames = new Set(projects.map(p => p.name));

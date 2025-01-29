@@ -184,7 +184,7 @@ export default function DashboardPage() {
             </CardContent>
           </Card>
         </TabsContent>
-       
+    
       </Tabs>
 
       {/* Replace Provider Packet Flagging card */}
