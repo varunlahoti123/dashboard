@@ -11,7 +11,6 @@ import {
 } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { AlertCircle, BarChart3, CheckCircle, Clock, FileText, Flag, PieChart, Search } from 'lucide-react'
-import BulkUpload from "@/components/features/bulk-upload"
 import { Input } from "@/components/ui/input"
 export default function DashboardPage() {
   return (
@@ -185,9 +184,7 @@ export default function DashboardPage() {
             </CardContent>
           </Card>
         </TabsContent>
-        {/* <TabsContent value="bulk-upload">
-            <BulkUpload />
-        </TabsContent> */}
+       
       </Tabs>
 
       {/* Replace Provider Packet Flagging card */}
