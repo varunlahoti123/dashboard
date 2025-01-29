@@ -8,6 +8,7 @@ import { createBulkRecordRequestsFromCsv, getRecordRequestTemplate } from "@/app
 import { toast } from "sonner";
 import { parse } from 'csv-parse/sync';
 import { ProjectWithRequests } from "@/types/projects";
+import { stringify } from 'csv-stringify/sync';
 
 interface CsvRow {
   projectName: string;
@@ -54,7 +55,6 @@ export function RecordRequestsBulkActions({ projects }: { projects: ProjectWithR
   const handleCsvUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     if (!event.target.files?.[0]) return;
     setUploading(true);
-    console.log('Starting upload...');
     
     try {
       const file = event.target.files[0];
@@ -68,9 +68,12 @@ export function RecordRequestsBulkActions({ projects }: { projects: ProjectWithR
         r.providerName?.trim() !== ''
       );
 
-      const headers = Object.keys(validRecords[0] ?? {}).join(',');
-      const rows = validRecords.map(record => Object.values(record).join(','));
-      const csvContent = [headers, ...rows].join('\n');
+      const csvContent = stringify(validRecords, {
+        header: true,
+        quoted: true,
+        quote: '"',
+        escape: '"'
+      });
       
       const filteredCsvFile = new File([csvContent], file.name, { type: 'text/csv' });
       
@@ -78,14 +81,10 @@ export function RecordRequestsBulkActions({ projects }: { projects: ProjectWithR
       
       const formData = new FormData();
       formData.append('file', filteredCsvFile);
-      console.log('Sending to server...');
       
       const count = await createBulkRecordRequestsFromCsv(formData);
-      console.log('Server returned count:', count);
-      
       router.refresh();
       toast.success(`${count} record requests added`);
-      console.log('Toast should have shown');
     } catch (error) {
       console.error('Upload error:', error);
       toast.error(error instanceof Error ? error.message : 'Upload failed');
