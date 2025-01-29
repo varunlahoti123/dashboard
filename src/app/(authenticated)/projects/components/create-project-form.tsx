@@ -13,15 +13,17 @@ import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { FolderPlus } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { ProjectWithRequests } from "@/types/projects";
 
-export function CreateProjectForm({ onSuccess }: { onSuccess?: () => void }) {
+export function CreateProjectForm({ onSuccess, projects }: { onSuccess?: () => void, projects: ProjectWithRequests[] }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const { toast } = useToast();
   
   const { 
     register, 
-    handleSubmit, 
+    handleSubmit,
+    setError, 
     reset,
     formState: { errors } 
   } = useForm<ProjectFormValues>({
@@ -29,6 +31,11 @@ export function CreateProjectForm({ onSuccess }: { onSuccess?: () => void }) {
   });
 
   const onSubmit = async (data: ProjectFormValues) => {
+    if (projects.some(p => p.name === data.name)) {
+      setError('name', { message: 'Project name already exists. Please choose a different name.' });
+      return;
+    }
+    
     console.log('Form data received:', data);
     
     const formData = new FormData();

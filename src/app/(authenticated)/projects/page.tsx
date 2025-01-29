@@ -1,4 +1,4 @@
-import { getProjects } from "@/app/_actions/projects";
+import { getUserProjectsWithRecordRequests } from "@/app/_actions/record-requests";
 import { Suspense } from "react";
 import LoadingRequests from "./loading";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -17,13 +17,13 @@ export default async function ProjectsPage() {
 }
 
 async function ProjectsContent() {
-  const projects = await getProjects();
+  const projects = await getUserProjectsWithRecordRequests();
 
   return (
     <>
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex justify-between items-center">
         <h2 className="text-2xl font-semibold text-gray-800">Projects</h2>
-        <CreateProjectForm />
+        <CreateProjectForm projects={projects} />
       </div>
 
       <div className="space-y-6">
@@ -36,6 +36,7 @@ async function ProjectsContent() {
                 initialDescription={project.description ?? undefined}
                 initialLOR={project.letterRepresentationDocumentLocation ?? undefined}
                 initialRL={project.requestLetterDocumentLocation ?? undefined}
+                projects={projects}
               />
             </CardHeader>
           </Card>

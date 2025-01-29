@@ -3,19 +3,22 @@
 import { useState } from "react"
 import { updateProjectDetails } from "@/app/_actions/projects"
 import { FileText, FileCheck, Pencil } from "lucide-react"
+import { ProjectWithRequests } from "@/types/projects"
 
-export function EditProject({ projectId, initialName, initialDescription, initialLOR, initialRL }: { 
+export function EditProject({ projectId, initialName, initialDescription, initialLOR, initialRL, projects }: { 
   projectId: string;
   initialName: string;
   initialDescription?: string;
   initialLOR?: string;
   initialRL?: string;
+  projects: ProjectWithRequests[];
 }) {
   const [isEditing, setIsEditing] = useState(false)
   const [name, setName] = useState(initialName)
   const [description, setDescription] = useState(initialDescription ?? '')
   const [lor, setLor] = useState(initialLOR ?? '')
   const [rl, setRl] = useState(initialRL ?? '')
+  const [error, setError] = useState('')
 
   if (!isEditing) {
     return (
@@ -61,13 +64,29 @@ export function EditProject({ projectId, initialName, initialDescription, initia
     )
   }
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (name !== initialName && projects.some(p => p.name === name)) {
+      setError('Project name already exists. Please choose a different name.')
+      return
+    }
+    await updateProjectDetails(projectId, { name, description, letterRepresentationDocumentLocation: lor || null, requestLetterDocumentLocation: rl || null })
+    setIsEditing(false)
+  }
+
   return (
-    <form onSubmit={async (e) => {
-      e.preventDefault()
-      await updateProjectDetails(projectId, { name, description, letterRepresentationDocumentLocation: lor || null, requestLetterDocumentLocation: rl || null })
-      setIsEditing(false)
-    }} className="space-y-4">
-      <input value={name} onChange={(e) => setName(e.target.value)} className="w-full p-2 text-xl font-semibold border rounded" />
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div>
+        <input 
+          value={name} 
+          onChange={(e) => {
+            setName(e.target.value)
+            setError('')
+          }} 
+          className={`w-full p-2 text-xl font-semibold border rounded ${error ? 'border-red-500' : ''}`} 
+        />
+        {error && <p className="text-sm text-red-500 mt-1">{error}</p>}
+      </div>
       <textarea value={description} onChange={(e) => setDescription(e.target.value)} className="w-full p-2 text-sm border rounded" rows={2} />
       <div className="grid grid-cols-2 gap-4">
         <div className="p-4 border rounded-lg hover:border-blue-500 transition-colors">
