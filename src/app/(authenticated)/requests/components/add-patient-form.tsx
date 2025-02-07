@@ -10,9 +10,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { UserPlus } from "lucide-react";
 import { createNewRecordRequest, createNewHipaaAuthorization } from "@/app/_actions/record-requests";
 import { ProjectWithRequests } from "@/types/projects";
+import * as Sentry from "@sentry/nextjs";
 
 export function AddPatientForm({ projects }: { projects: ProjectWithRequests[] }) {
   const [open, setOpen] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
   return (
@@ -30,24 +32,31 @@ export function AddPatientForm({ projects }: { projects: ProjectWithRequests[] }
         </DialogHeader>
         <form action={async (formData) => {
           try {
-            // First create the record request
-            const recordRequest = await createNewRecordRequest(formData);
-            
-            // Then create the HIPAA authorization using the new record request ID
-            const hipaaFormData = new FormData();
-            hipaaFormData.append("record-request-id", recordRequest.id);
-            hipaaFormData.append("project-id", formData.get("project") as string);
-            hipaaFormData.append("hipaa-auth-url", formData.get("hipaa-auth-url") as string);
-            hipaaFormData.append("expiration-date", formData.get("expiration-date") as string);
-            
-            await createNewHipaaAuthorization(hipaaFormData);
-            
-            setOpen(false);
-            router.refresh();
+            await Sentry.startSpan(
+              { name: 'Add Patient Form Submission' },
+              async () => {
+                // Step 1: Create record request
+                const recordRequest = await createNewRecordRequest(formData);
+                
+                // Step 2: Prepare HIPAA form data
+                const hipaaFormData = new FormData();
+                hipaaFormData.append("record-request-id", recordRequest.id);
+                hipaaFormData.append("project-id", formData.get("project") as string);
+                hipaaFormData.append("hipaa-auth-url", formData.get("hipaa-auth-url") as string);
+                hipaaFormData.append("expiration-date", formData.get("expiration-date") as string);
+                
+                // Step 3: Create HIPAA authorization
+                await createNewHipaaAuthorization(hipaaFormData);
+                
+                // Step 4: Close form and refresh
+                setOpen(false);
+                router.refresh();
+              }
+            );
           } catch (error) {
-            console.error("Error creating record request with HIPAA authorization:", error);
-            // You might want to add error handling UI here
-            throw error;
+            console.log('Form Submission Error:', error);
+            setError(error instanceof Error ? error.message : 'An unexpected error occurred');
+            Sentry.captureException(error);
           }
         }}>
           <div className="grid gap-4 py-4">
@@ -139,6 +148,9 @@ export function AddPatientForm({ projects }: { projects: ProjectWithRequests[] }
                   placeholder="https://example.com/hipaa-auth.pdf"
                   required
                 />
+                {error && (
+                  <p className="text-sm text-red-500 mt-1">{error}</p>
+                )}
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="expiration-date">Authorization Expiration Date</Label>
